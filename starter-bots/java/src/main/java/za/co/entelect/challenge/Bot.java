@@ -19,14 +19,16 @@ public class Bot {
     private final Random random;
 
     private final static Command ACCELERATE = new AccelerateCommand();
-    private final static Command LIZARD = new LizardCommand();
-    private final static Command OIL = new OilCommand();
-    private final static Command BOOST = new BoostCommand();
-    private final static Command EMP = new EmpCommand();
-    private final static Command FIX = new FixCommand();
-
-    private final static Command TURN_RIGHT = new ChangeLaneCommand(1);
+    private final static Command USE_BOOST = new BoostCommand();
     private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
+    private final static Command TURN_RIGHT = new ChangeLaneCommand(1);
+    private final static Command DECELERATE = new DecelerateCommand();
+    private final static Command NOTHING = new DoNothingCommand();
+    private final static Command USE_EMP = new EmpCommand();
+    private final static Command FIX = new FixCommand();
+    private final static Command USE_LIZARD = new LizardCommand();
+    private final static Command USE_OIL = new OilCommand();
+    // private final static Command USE_TWEET = new TweetCommand(lane, block);
 
     public Bot() {
         this.random = new SecureRandom();
@@ -43,23 +45,18 @@ public class Bot {
         List<Object> nextBlocks = blocks.subList(0,1);
 
         //Fix first if too damaged to move
-        if(myCar.damage == 5) {
+        if(myCar.damage > 1) {
             return FIX;
         }
         //Accelerate first if going to slow
-        if(myCar.speed <= 3) {
+        if(myCar.speed < 9) {
             return ACCELERATE;
-        }
-
-        //Basic fix logic
-        if(myCar.damage >= 5) {
-            return FIX;
         }
 
         //Basic avoidance logic
         if (blocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.WALL)) {
             if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
-                return LIZARD;
+                return USE_LIZARD;
             }
             if (nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.WALL)) {
                 int i = random.nextInt(directionList.size());
@@ -69,20 +66,20 @@ public class Bot {
 
         //Basic improvement logic
         if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            return BOOST;
+            return USE_BOOST;
         }
 
         //Basic aggression logic
         if (myCar.speed == maxSpeed) {
             if (hasPowerUp(PowerUps.OIL, myCar.powerups)) {
-                return OIL;
+                return USE_OIL;
             }
             if (hasPowerUp(PowerUps.EMP, myCar.powerups)) {
-                return EMP;
+                return USE_EMP;
             }
         }
 
-        return ACCELERATE;
+        return NOTHING;
     }
 
     private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
