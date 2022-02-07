@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 
 public class Bot {
 
+    private static final int maxSpeed = 9;
     private List<Command> directionList = new ArrayList<>();
 
     private final Random random;
@@ -154,7 +155,7 @@ public class Bot {
         }
 
         //Accelerate first if going to slow
-        if (myCar.speed < 8) {
+        if (myCar.speed < maxSpeed) {
             return ACCELERATE;
         }
 
