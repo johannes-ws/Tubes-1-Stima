@@ -1,0 +1,10 @@
+======================================================================================================
+round:188
+player: id:1 position: y:1 x:1494 speed:9 state:NOTHING statesThatOccurredThisRound:NOTHING boosting:true boost-counter:3 damage:1 score:219 powerups: BOOST:2, LIZARD:2, EMP:18
+opponent: id:2 position: y:4 x:645 speed:6
+
+[░∱░░░1░░▓░░║]
+[░░░░░░░░░░░║]
+[░░░░░░░░░░░║]
+[░░░░▓▓▓░░░░║]
+======================================================================================================
