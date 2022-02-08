@@ -13,7 +13,13 @@ import java.security.SecureRandom;
 
 public class Bot {
 
+    private static final int minSpeed = 0;
+    private static final int speed1 = 3;
+    private static final int initialSpeed = 5;
+    private static final int speed2 = 6;
+    private static final int speed3 = 8;
     private static final int maxSpeed = 9;
+    private static final int boostSpeed = 15;
     private List<Command> directionList = new ArrayList<>();
 
     private final Random random;
@@ -28,7 +34,6 @@ public class Bot {
     private final static Command FIX = new FixCommand();
     private final static Command USE_LIZARD = new LizardCommand();
     private final static Command USE_OIL = new OilCommand();
-    // private final static Command USE_TWEET = new TweetCommand(lane, block);
 
     public Bot() {
         this.random = new SecureRandom();
@@ -53,6 +58,10 @@ public class Bot {
             return FIX;
         }
         
+        if (myCar.speed == minSpeed) {
+            return ACCELERATE;
+        }
+
         //Basic avoidance logic
         /* if (nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL) || nextBlocks.contains(Terrain.TWEET)) {
             if (myCar.position.lane != 1 && myCar.position.lane != 4) {
@@ -122,7 +131,7 @@ public class Bot {
             }
         } */
 
-        if (nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL) || nextBlocks.contains(Terrain.TWEET)) {
+        if (nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL)) {
             if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
                 return USE_LIZARD;
             } else if (myCar.position.lane == 1) {
@@ -136,11 +145,44 @@ public class Bot {
             }
         }
 
+        for (int i = 1; i <= myCar.speed; i++) {
+            if (myCar.position.lane == opponent.position.lane && myCar.position.block == opponent.position.block - i) {
+                if (myCar.position.lane == 1) {
+                    return TURN_RIGHT;
+                } else if (myCar.position.lane == 2) {
+                    return TURN_RIGHT;
+                } else if (myCar.position.lane == 3) {
+                    return TURN_LEFT;
+                } else if (myCar.position.lane == 4) {
+                    return TURN_LEFT;
+                }
+            }
+        }
+
         //Basic aggression logic
-        if (myCar.position.block < opponent.position.block) {
+        if (myCar.position.lane == 1) {
+            if ((myCar.position.block < opponent.position.block && myCar.position.lane == opponent.position.lane) || (myCar.position.block <= opponent.position.block && myCar.position.lane == opponent.position.lane - 1)) {
+                if (hasPowerUp(PowerUps.EMP, myCar.powerups)) {
+                    return USE_EMP;
+                }
+            }
+        } else if (myCar.position.lane == 4) {
+            if ((myCar.position.block < opponent.position.block && myCar.position.lane == opponent.position.lane) || (myCar.position.block <= opponent.position.block && myCar.position.lane == opponent.position.lane + 1)) {
+                if (hasPowerUp(PowerUps.EMP, myCar.powerups)) {
+                    return USE_EMP;
+                }
+            }
+        } else if ((myCar.position.block < opponent.position.block && myCar.position.lane == opponent.position.lane) || (myCar.position.block <= opponent.position.block && myCar.position.lane == opponent.position.lane + 1) || (myCar.position.block <= opponent.position.block && myCar.position.lane == opponent.position.lane - 1)) {
             if (hasPowerUp(PowerUps.EMP, myCar.powerups)) {
                 return USE_EMP;
             }
+        }
+
+        if (hasPowerUp(PowerUps.TWEET, myCar.powerups)) {
+            int lane = opponent.position.lane;
+            int block = opponent.position.block + opponent.speed + 3;
+            Command USE_TWEET = new TweetCommand(lane, block); 
+            return USE_TWEET;
         }
 
         if (myCar.position.block > opponent.position.block) {
@@ -149,14 +191,40 @@ public class Bot {
             }
         }
 
+        //Fix first to boost
+        if (hasPowerUp(PowerUps.BOOST, myCar.powerups) && myCar.damage == 1) {
+            return FIX;
+        }
+        
         //Basic improvement logic
-        if (!myCar.boosting && hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            return USE_BOOST;
+        nextBlocks = blocks.subList(0,boostSpeed);
+        if (!(nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL))) {
+            if (!myCar.boosting && hasPowerUp(PowerUps.BOOST, myCar.powerups) && myCar.damage == 0) {
+                return USE_BOOST;
+            }
         }
 
         //Accelerate first if going to slow
-        if (myCar.speed < maxSpeed) {
-            return ACCELERATE;
+        if (myCar.speed == speed1) {
+            nextBlocks = blocks.subList(0,speed2);
+            if (!(nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL))) {
+                return ACCELERATE;
+            }
+        } else if (myCar.speed == initialSpeed) {
+            nextBlocks = blocks.subList(0,speed2);
+            if (!(nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL))) {
+                return ACCELERATE;
+            }
+        } else if (myCar.speed == speed2) {
+            nextBlocks = blocks.subList(0,speed3);
+            if (!(nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL))) {
+                return ACCELERATE;
+            }
+        } else if (myCar.speed == speed3) {
+            nextBlocks = blocks.subList(0,maxSpeed);
+            if (!(nextBlocks.contains(Terrain.MUD) || nextBlocks.contains(Terrain.OIL_SPILL) || nextBlocks.contains(Terrain.WALL))) {
+                return ACCELERATE;
+            }
         }
 
         return NOTHING;
