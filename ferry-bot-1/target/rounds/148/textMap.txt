@@ -1,10 +1,10 @@
 ======================================================================================================
 round:148
-player: id:1 position: y:1 x:1166 speed:9 state:HIT_MUD statesThatOccurredThisRound:NOTHING, HIT_MUD boosting:false boost-counter:0 damage:1 score:166 powerups: LIZARD:1, TWEET:1, EMP:13, OIL:1, BOOST:1
-opponent: id:2 position: y:4 x:501 speed:3
+player: id:1 position: y:2 x:1025 speed:6 state:ACCELERATING statesThatOccurredThisRound:ACCELERATING boosting:false boost-counter:0 damage:1 score:43 powerups: OIL:3, EMP:5
+opponent: id:2 position: y:4 x:1041 speed:6
 
-[░░░░░1░░»░░░░░░░░»░░░░░░░░]
-[Φ░░░░░░░░░░░░░»░░░░░░░░░»░]
-[░░░░░░░░░░░░▓░░░▓░░░░░░░░░]
-[░░░░░░░░░░░░░░░░░▓░░░░*░░░]
+[░░░░░░░░░Φ░░░░░░░░░░░░░░░░]
+[░░░░░1░░░░░░░░░░░░░░░░░∱░░]
+[░░░T░░░░Φ░░░░░░Φ░▓░░░░░░░░]
+[░░░░░░░░░░░░░░»░▓░T░░2░░░░]
 ======================================================================================================

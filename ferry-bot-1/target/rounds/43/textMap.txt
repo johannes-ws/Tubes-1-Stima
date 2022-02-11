@@ -1,10 +1,10 @@
 ======================================================================================================
 round:43
-player: id:1 position: y:2 x:346 speed:9 state:NOTHING statesThatOccurredThisRound:NOTHING boosting:false boost-counter:0 damage:1 score:34 powerups: EMP:3
-opponent: id:2 position: y:4 x:147 speed:6
+player: id:1 position: y:2 x:397 speed:3 state:HIT_WALL statesThatOccurredThisRound:ACCELERATING, HIT_WALL boosting:false boost-counter:0 damage:3 score:70 powerups: BOOST:1, EMP:2
+opponent: id:2 position: y:1 x:278 speed:3
 
-[░▓*░░░░░░▓*░░░░░#░░▓░░░░░░]
-[░░░░░1░░░░░T░░░░░»░░░░░░T░]
-[░░░░▓#░░∱▓░░░░░░░░░░░░░░░░]
-[░░░░░░░▓▓░░░░»░*░░░░T░░»░░]
+[░░░░**░░░░▓░░░░░░░░░░░░░░░]
+[░░░#░1#░░∱░▓░░░░░░░▓░░░░░░]
+[∱░░░░░░░Φ░∱░░░░░░░░░░░░░░░]
+[░░░░░░░░░░░░░▓▓░░░░░░░░░░░]
 ======================================================================================================

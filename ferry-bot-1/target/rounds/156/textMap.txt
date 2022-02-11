@@ -1,10 +1,10 @@
 ======================================================================================================
 round:156
-player: id:1 position: y:2 x:1239 speed:15 state:USED_TWEET statesThatOccurredThisRound:USED_TWEET boosting:true boost-counter:4 damage:0 score:195 powerups: BOOST:3, LIZARD:1, EMP:13
-opponent: id:2 position: y:4 x:537 speed:6
+player: id:1 position: y:2 x:1076 speed:3 state:HIT_WALL statesThatOccurredThisRound:ACCELERATING, HIT_WALL boosting:false boost-counter:0 damage:3 score:39 powerups: OIL:2, EMP:5
+opponent: id:2 position: y:3 x:1100 speed:9
 
-[░░░░░░▓▓▓░░░░░░░░░░░░░░░▓░]
-[░░░░░1░░░░░░░░░░░░░░░░░*░▓]
-[░░░░░░░░░░░░░░▓░░░░░░░░░░░]
-[░░░░░▓▓░░#»░░»░░░░░░░░░*░░]
+[░░░░░░»▓░░░░░░░░░░░░░░░░░░]
+[#░░░░1░▓░C*░░░░░░▓░░░Φ░░░░]
+[░░░Φ░░░░░░░█░░░░░░░░█░░░░░]
+[░*░░░░░░▓░░░░░░░░░░░#░░░░░]
 ======================================================================================================

@@ -1,10 +1,10 @@
 ======================================================================================================
 round:87
-player: id:1 position: y:2 x:691 speed:8 state:USED_TWEET statesThatOccurredThisRound:USED_TWEET boosting:false boost-counter:0 damage:2 score:100 powerups: LIZARD:1, EMP:9, TWEET:1
-opponent: id:2 position: y:4 x:299 speed:0
+player: id:1 position: y:2 x:643 speed:9 state:NOTHING statesThatOccurredThisRound:NOTHING boosting:true boost-counter:1 damage:1 score:39 powerups: BOOST:2, EMP:3
+opponent: id:2 position: y:4 x:637 speed:8
 
-[░░░░░░░▓▓░░░░░░░#░░░#░░░░░]
-[░░░░░1░░░░░∱∱░░░░░░░░░░░░▓]
-[░░∱░░░#░░░░░░░»░░░░░░░░░░░]
-[░░░░░▓#░░░T░░░#░░░░░░░░░░░]
+[░░░░░░░░░░T▓▓░░░░░░░░░░░░░]
+[░░░░░1░░░░░░░░░░░░░░░░░░░░]
+[Φ░░░░░░░░░░░░░░░░░░░░░░░∱░]
+[░░▓░░░░░░░░T░░░░░░░░░░░░░░]
 ======================================================================================================

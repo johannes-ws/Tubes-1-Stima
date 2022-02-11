@@ -1,10 +1,10 @@
 ======================================================================================================
 round:173
-player: id:1 position: y:2 x:1378 speed:9 state:NOTHING statesThatOccurredThisRound:NOTHING, NOTHING boosting:false boost-counter:0 damage:1 score:198 powerups: OIL:1, BOOST:3, LIZARD:1, EMP:15
-opponent: id:2 position: y:4 x:588 speed:3
+player: id:1 position: y:2 x:1124 speed:3 state:FIXED_CAR statesThatOccurredThisRound:FIXED_CAR boosting:false boost-counter:0 damage:1 score:18 powerups: OIL:3, EMP:7
+opponent: id:2 position: y:3 x:1272 speed:9
 
-[░░░░░░░░░░░░░░*░░░░░░░*░░░]
-[░Φ░░░1░░░░░░░░#░░░░░░░░░░░]
-[░░░░#░░░░░░░░░░░░░░░░░░░░░]
-[░▓▓▓▓▓░░░░░░░░░░░░░░»░░░*░]
+[░░▓░░»░░*░░░░░░░░░░░░░░░░░]
+[░░░░░1░T░░░░░▓░░░*░░░░░░░░]
+[T░░░░░░░░░░░░░░░░█░T░░░░░░]
+[░░░░░░#░░░░░░░░░░░░░░░░░░░]
 ======================================================================================================

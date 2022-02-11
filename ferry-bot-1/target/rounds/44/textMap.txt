@@ -1,10 +1,10 @@
 ======================================================================================================
 round:44
-player: id:1 position: y:2 x:355 speed:9 state:NOTHING statesThatOccurredThisRound:NOTHING boosting:false boost-counter:0 damage:1 score:38 powerups: EMP:3, TWEET:1
-opponent: id:2 position: y:4 x:153 speed:6
+player: id:1 position: y:2 x:397 speed:3 state:FIXED_CAR statesThatOccurredThisRound:FIXED_CAR boosting:false boost-counter:0 damage:1 score:70 powerups: BOOST:1, EMP:2
+opponent: id:2 position: y:1 x:293 speed:15
 
-[▓*░░░░░#░░▓░░░░░░▓░░░░░░░»]
-[░░T░░1░░»░░░░░░T░░░░░░*░░░]
-[▓░░░░░░░░░░░░░░░░░░░░░░░░░]
-[░░░░»░*░░░░T░░»░░░░░░░»░░#]
+[░░░░**░░░░▓░░░░░░░░░░░░░░░]
+[░░░#░1#░░∱░▓░░░░░░░▓░░░░░░]
+[∱░░░░░░░Φ░∱░░░░░░░░░░░░░░░]
+[░░░░░░░░░░░░░▓▓░░░░░░░░░░░]
 ======================================================================================================

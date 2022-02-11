@@ -1,10 +1,10 @@
 ======================================================================================================
 round:16
-player: id:1 position: y:1 x:118 speed:8 state:NOTHING statesThatOccurredThisRound:NOTHING boosting:false boost-counter:0 damage:2 score:5 powerups: EMP:2
-opponent: id:2 position: y:4 x:66 speed:0
+player: id:1 position: y:2 x:106 speed:9 state:USED_EMP statesThatOccurredThisRound:USED_EMP boosting:false boost-counter:0 damage:1 score:30 powerups: BOOST:3, LIZARD:2
+opponent: id:2 position: y:2 x:111 speed:3
 
-[░░░░░1░░░░░░▓▓░░░░░░░░░░∱░]
-[░░░░░░∱░░░░░░░░░░░░░░░░░░░]
-[░░░░░░░░░░░░░░░░∱░░░░░░░░░]
-[░░░░░░░░░░░░░▓░░░░»░░░░░░»]
+[░░░░░░░▓▓░░░*▓░#░░#░░∱░░░░]
+[░░░░░1░░░░2░░░░░░░░░░░░░░*]
+[░░░░░░░░░░░░░░░░░░░░░░░░░░]
+[░░░░░░░░░░░░░░░░░░░░░░░░░░]
 ======================================================================================================

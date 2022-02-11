@@ -1,10 +1,10 @@
 ======================================================================================================
 round:144
-player: id:1 position: y:1 x:1121 speed:3 state:HIT_WALL statesThatOccurredThisRound:ACCELERATING, HIT_WALL boosting:false boost-counter:0 damage:2 score:149 powerups: OIL:2, BOOST:1, EMP:13
-opponent: id:2 position: y:4 x:489 speed:3
+player: id:1 position: y:2 x:1005 speed:3 state:ACCELERATING statesThatOccurredThisRound:ACCELERATING boosting:false boost-counter:0 damage:1 score:49 powerups: OIL:3, EMP:5
+opponent: id:2 position: y:4 x:1019 speed:3
 
-[░░░#░1░░░░░░░░░░░░░░░░░░░░]
-[░░░░░░░░░░░░░░░░*░░░░Φ░░░░]
-[░Φ░░░░░░░T░░░T░░░░░░░∱░░░░]
-[░░░░░░░░»░░░░░░░░░░░░░░░░░]
+[░░░░░░░░░░░░*░░░░░░░░░░░░░]
+[░#░░░1░░░░░░░▓░░░░░▓░░░░░░]
+[░░░░░░#░░░*░░░░▓░░░░░░░T░░]
+[░T░░░░░░░░░█░░░░░░░2░░░░░░]
 ======================================================================================================

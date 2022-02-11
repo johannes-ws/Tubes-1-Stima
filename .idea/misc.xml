@@ -5,6 +5,8 @@
       <list>
         <option value="$PROJECT_DIR$/starter-bots/java/pom.xml" />
         <option value="$PROJECT_DIR$/reference-bot/java/pom.xml" />
+        <option value="$PROJECT_DIR$/ferry-bot-2/pom.xml" />
+        <option value="$PROJECT_DIR$/jojo-bot/java/pom.xml" />
       </list>
     </option>
   </component>

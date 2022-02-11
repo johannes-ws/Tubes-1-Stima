@@ -1,10 +1,10 @@
 ======================================================================================================
 round:163
-player: id:1 position: y:2 x:1299 speed:6 state:ACCELERATING statesThatOccurredThisRound:ACCELERATING boosting:false boost-counter:0 damage:1 score:184 powerups: BOOST:4, EMP:13
-opponent: id:2 position: y:4 x:561 speed:0
+player: id:1 position: y:2 x:1101 speed:8 state:ACCELERATING statesThatOccurredThisRound:ACCELERATING boosting:false boost-counter:0 damage:1 score:38 powerups: OIL:3, EMP:7
+opponent: id:2 position: y:3 x:1163 speed:9
 
-[░░░░░░░░░░░░*░░░░*░░░░░░░░]
-[░░░░░1*▓░░░░░░░░░░░░░░░░░░]
-[░░░░░░░░░░░░░░░░░░░░░░░░░░]
-[░░░░░░░░▓░░░░░Φ░░░░░░░░░░░]
+[░░░░░░░#*░▓░░░░░░░░░░░░░░▓]
+[░░░░░1░░░░░T░░░░░░░░░░░░░░]
+[░*░░█░░░░░░░░█░░░░░░░░█T░░]
+[░░░∱░»░░░░░░▓░░»░░░░░░░░░░]
 ======================================================================================================

@@ -1,10 +1,10 @@
 ======================================================================================================
 round:161
-player: id:1 position: y:2 x:1293 speed:3 state:HIT_MUD statesThatOccurredThisRound:ACCELERATING, HIT_MUD, HIT_MUD, HIT_MUD boosting:false boost-counter:0 damage:3 score:184 powerups: BOOST:4, EMP:13
-opponent: id:2 position: y:4 x:552 speed:3
+player: id:1 position: y:2 x:1093 speed:6 state:HIT_MUD statesThatOccurredThisRound:ACCELERATING, HIT_MUD boosting:false boost-counter:0 damage:3 score:38 powerups: OIL:3, EMP:7
+opponent: id:2 position: y:3 x:1145 speed:9
 
-[░░#░░░░░░░░░░░░░░░*░░░░*░░]
-[▓░░░░1░░░░░░*▓░░░░░░░░░░░░]
-[░░░░░░░░░░░░░░░░░░░░░░░░░░]
-[░░░░░░░░░░░░░░▓░░░░░Φ░░░░░]
+[░░░░░░░░░░░░░░░#*░▓░░░░░░░]
+[▓░░░Φ1░░░░░░░░░░░░░T░░░░░░]
+[░░░█░░░░░*░░█░░░░░░░░█░░░░]
+[░░░#░░░░░░░∱░»░░░░░░▓░░»░░]
 ======================================================================================================
