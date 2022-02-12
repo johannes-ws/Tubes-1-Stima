@@ -7,8 +7,6 @@ import za.co.entelect.challenge.enums.Terrain;
 
 import java.util.*;
 
-import java.security.SecureRandom;
-
 import static java.lang.Math.*;
 import static java.util.Collections.emptyList;
 
@@ -40,19 +38,32 @@ public class Bot {
         List<Lane> blocksInFrontRight = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, RIGHT);
         List<Lane> blocksInBack = getBlocksBack(myCar.position.lane, myCar.position.block, gameState);
         List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(myCar.speed, myCar.damage), blocksInFront.size() - 1));
-        List<Lane> blocksIfBoost = blocksInFront.subList(0, min(speedIfBoost(myCar.damage), blocksInFront.size() - 1));
+        List<Lane> blocksIfBoost = blocksInFront.subList(0, 15);
+        List<Lane> blocksIfNoAccelerate = blocksInFront.subList(0, myCar.speed);
+        List<Lane> blocksIfLeft = emptyList();
+        List<Lane> blocksIfRight = emptyList();
+
+        int numOfPowerUpsLeft = countPowerUps(blocksIfLeft);
+        int numOfPowerUpsCenter = countPowerUps(blocksIfAccelerate);
+        int numOfPowerUpsRight = countPowerUps(blocksIfRight);
+
+        int leftFinalSpeed = finalSpeedIfCollide(blocksIfLeft, myCar, false);
+        int centerFinalSpeed = finalSpeedIfCollide(blocksIfAccelerate, myCar, true);
+        int rightFinalSpeed = finalSpeedIfCollide(blocksIfRight, myCar, false);
 
         // GREEDY FIX
         // Fix jika damage lebih dari atau sama dengan 3 atau jika punya boost dan damage lebih dari atau sama dengan 1
-        if(myCar.damage >= 1) {
+        if(myCar.damage > 1) {
             return FIX;
+        }
+
+        if (myCar.speed == 0) {
+            return ACCELERATE;
         }
 
         // GREEDY OBSTACLE AVOIDANCE
         // Hindari obstacle, cari jalur yang speed akhirnya paling besar, cari jalur yang dapat memberikan powerup terbanyak
-        List<Lane> blocksIfNoAccelerate = blocksInFront.subList(0, myCar.speed);
-        List<Lane> blocksIfLeft = emptyList();
-        List<Lane> blocksIfRight = emptyList();
+
         if(isObstaclePresent(blocksIfNoAccelerate, opponent.id)) {
             if (myCar.position.lane != 1) {
                 blocksIfLeft = blocksInFrontLeft.subList(0, min(myCar.speed, blocksInFrontLeft.size() - 1));
@@ -86,21 +97,28 @@ public class Bot {
             }
 
             // Lizard jika kedua lane ada obstacle, punya lizard, dan tidak ada obstacle di titik akhir gerakan
-            if(isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id) && hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
-                return LIZARD;
+            if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
+                if (myCar.position.lane == 1) {
+                    if (isObstaclePresent(blocksIfRight, opponent.id)) {
+                        return LIZARD;
+                    }
+                }
+
+                else if (myCar.position.lane == 4) {
+                    if (isObstaclePresent(blocksIfLeft, opponent.id)) {
+                        return  LIZARD;
+                    }
+                }
+                else if (isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id)) {
+                    return LIZARD;
+                }
             }
 
-            if (isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id)) {
+            if ((isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id))
+            || (myCar.position.lane == 1 && isObstaclePresent(blocksIfRight, opponent.id))
+            || (myCar.position.lane == 4 && isObstaclePresent(blocksIfLeft, opponent.id))) {
                 // Jika kedua lane ada obstacle, cari yang obstaclenya memiliki efek negatif lebih kecil
                 // Jika kedua lane ada obstacle, efek negatifnya sama, cari yang ada powerupnya
-
-                int leftFinalSpeed = finalSpeedIfCollide(blocksIfLeft, myCar, false);
-                int centerFinalSpeed = finalSpeedIfCollide(blocksIfNoAccelerate, myCar, true);
-                int rightFinalSpeed = finalSpeedIfCollide(blocksIfRight, myCar, false);
-
-                int numOfPowerUpsLeft = countPowerUps(blocksIfLeft);
-                int numOfPowerUpsCenter = countPowerUps(blocksIfAccelerate);
-                int numOfPowerUpsRight = countPowerUps(blocksIfRight);
 
                 if (myCar.position.lane == 1) {
                     if (centerFinalSpeed > rightFinalSpeed) {
@@ -108,14 +126,6 @@ public class Bot {
                     }
 
                     if (centerFinalSpeed < rightFinalSpeed) {
-                        return TURN_RIGHT;
-                    }
-
-                    if (numOfPowerUpsCenter > numOfPowerUpsRight) {
-                        return ACCELERATE;
-                    }
-
-                    if (numOfPowerUpsCenter < numOfPowerUpsRight) {
                         return TURN_RIGHT;
                     }
                 }
@@ -126,21 +136,13 @@ public class Bot {
                     if (centerFinalSpeed < leftFinalSpeed) {
                         return TURN_LEFT;
                     }
-
-                    if (numOfPowerUpsCenter > numOfPowerUpsLeft) {
-                        return ACCELERATE;
-                    }
-
-                    if (numOfPowerUpsCenter < numOfPowerUpsLeft) {
-                        return TURN_LEFT;
-                    }
                 }
                 else {
                     if (leftFinalSpeed > centerFinalSpeed && leftFinalSpeed > rightFinalSpeed) {
                         return TURN_LEFT;
                     }
 
-                    if (centerFinalSpeed >= leftFinalSpeed && rightFinalSpeed >= centerFinalSpeed) {
+                    if (centerFinalSpeed > leftFinalSpeed && centerFinalSpeed > rightFinalSpeed) {
                         return ACCELERATE;
                     }
 
@@ -148,24 +150,61 @@ public class Bot {
                         return TURN_RIGHT;
                     }
 
-
-                    if (numOfPowerUpsLeft > numOfPowerUpsCenter && numOfPowerUpsLeft > numOfPowerUpsRight) {
-                        return TURN_LEFT;
-                    }
-
-                    if (numOfPowerUpsCenter > numOfPowerUpsLeft && numOfPowerUpsCenter > numOfPowerUpsRight) {
+                    if (leftFinalSpeed == centerFinalSpeed && centerFinalSpeed > rightFinalSpeed) {
                         return ACCELERATE;
                     }
 
-                    if (numOfPowerUpsRight > numOfPowerUpsLeft && numOfPowerUpsRight > numOfPowerUpsCenter) {
-                        return TURN_RIGHT;
+                    if (leftFinalSpeed == rightFinalSpeed && leftFinalSpeed > centerFinalSpeed) {
+                        return TURN_LEFT;
+                    }
+
+                    if (centerFinalSpeed > leftFinalSpeed) {
+                        return ACCELERATE;
                     }
                 }
             }
         }
 
+        if (myCar.position.lane == 1) {
+            if (numOfPowerUpsCenter > numOfPowerUpsRight && numOfPowerUpsCenter >= 1) {
+                return ACCELERATE;
+            }
+
+            if (numOfPowerUpsCenter < numOfPowerUpsRight && numOfPowerUpsRight >= 1) {
+                return TURN_RIGHT;
+            }
+        }
+
+        if (myCar.position.lane == 4) {
+            if (numOfPowerUpsCenter > numOfPowerUpsLeft && numOfPowerUpsCenter >= 1) {
+                return ACCELERATE;
+            }
+
+            if (numOfPowerUpsCenter < numOfPowerUpsLeft && numOfPowerUpsLeft >= 1) {
+                return TURN_LEFT;
+            }
+        }
+
+        if (numOfPowerUpsLeft > numOfPowerUpsCenter && numOfPowerUpsLeft > numOfPowerUpsRight && numOfPowerUpsLeft >= 1) {
+            return TURN_LEFT;
+        }
+
+        if (numOfPowerUpsCenter > numOfPowerUpsLeft && numOfPowerUpsCenter > numOfPowerUpsRight && numOfPowerUpsCenter >= 1) {
+            return ACCELERATE;
+        }
+
+        if (numOfPowerUpsRight > numOfPowerUpsLeft && numOfPowerUpsRight > numOfPowerUpsCenter && numOfPowerUpsRight >= 1) {
+            return TURN_RIGHT;
+        }
+
+
         // GREEDY OBSTACLE PLACEMENT
         else {
+            // Gunkaan emp jika lawan di depan dan lawan ada di lane yang ada di range emp
+            if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar.position, opponent.position)) {
+                return EMP;
+            }
+
             // Gunakan tweet di depan lawan jika punya tweet
             if (hasPowerUp(PowerUps.TWEET, myCar.powerups)) {
                 return new TweetCommand(opponent.position.lane, opponent.position.block + speedIfAccelerate(opponent.speed, opponent.damage) + 2);
@@ -175,21 +214,21 @@ public class Bot {
             if (hasPowerUp(PowerUps.OIL, myCar.powerups) && myCar.position.block > opponent.position.block && !isObstaclePresent(blocksInBack, opponent.id)) {
                 return OIL;
             }
-            // Gunkaan emp jika lawan di depan dan lawan ada di lane yang ada di range emp
-            if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar.position, opponent.position)) {
-                return EMP;
-            }
+        }
+
+        if (hasPowerUp(PowerUps.BOOST, myCar.powerups) && !(isObstaclePresent(blocksIfBoost, opponent.id)) && myCar.damage == 1) {
+            return FIX;
         }
 
         // GREEDY BOOST
         // Boost jika speed akan bertambah saat command diberikan, tidak ada obstacle yang menghalangi, dan boost tersedia
-        if(myCar.speed < speedIfBoost(myCar.damage) && !(isObstaclePresent(blocksIfBoost, opponent.id)) && hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
+        if(myCar.speed < speedIfBoost(myCar.damage) && !(isObstaclePresent(blocksIfBoost, opponent.id)) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
             return BOOST;
         }
 
         // GREEDY ACCELERATE
-        // Accelerate jika speed akan bertambah saat command diberikan dan tidak ada obstacle yang menghalangi atau speed <= 6
-        if((myCar.speed < speedIfAccelerate(myCar.speed, myCar.damage) && !(isObstaclePresent(blocksIfAccelerate, opponent.id))) || myCar.speed <= 6) {
+        // Accelerate jika speed akan bertambah saat command diberikan dan tidak ada obstacle yang menghalangi atau speed <= 3
+        if(((myCar.speed < speedIfAccelerate(myCar.speed, myCar.damage) && !isObstaclePresent(blocksIfAccelerate, opponent.id)) || myCar.speed <= 3) && !myCar.boosting) {
             return ACCELERATE;
         }
 
@@ -214,7 +253,7 @@ public class Bot {
         int startBlock = map.get(0)[0].position.block;
 
         Lane[] laneList = map.get(lane - 1);
-        for (int i = max(block - startBlock, 0); i < block - startBlock + 20; i++) {
+        for (int i = max(block - startBlock + 1, 0); i <= block - startBlock + 20; i++) {
             if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
                 break;
             }
@@ -234,7 +273,7 @@ public class Bot {
         int startBlock = map.get(0)[0].position.block;
 
         Lane[] laneList = map.get(lane - 1 + direction);
-        for (int i = max(block - startBlock - abs(direction), 0); i <= block - startBlock + 20; i++) {
+        for (int i = max(block - startBlock, 0); i <= block - startBlock + 20; i++) {
             if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
                 break;
             }
@@ -326,7 +365,7 @@ public class Bot {
 
     private Boolean isInEmpRange(Position myCarPosition, Position opponentPosition) {
         // Mengembalikan true jika mobil lawan berada di posisi yang akan terkena EMP
-        if (myCarPosition.block + 8 < opponentPosition.block) {
+        if (myCarPosition.block < opponentPosition.block) {
             switch (myCarPosition.lane) {
                 case 1:
                     if (opponentPosition.lane == 1 || opponentPosition.lane == 2) {
@@ -374,7 +413,10 @@ public class Bot {
 
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
-            if (terrain == Terrain.WALL || block.isOccupiedByCyberTruck) {
+            if (block.isOccupiedByCyberTruck) {
+                return 0;
+            }
+            if (terrain == Terrain.WALL) {
                 damage += 2;
             }
             else if (terrain == Terrain.MUD || terrain == Terrain.OIL_SPILL) {
@@ -384,11 +426,7 @@ public class Bot {
 
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
-            if (block.isOccupiedByCyberTruck) {
-                final_speed = 0;
-                break;
-            }
-            else if (terrain == Terrain.WALL) {
+            if (terrain == Terrain.WALL) {
                 final_speed = 3;
             }
             else if ((terrain == Terrain.MUD || terrain == Terrain.OIL_SPILL) && final_speed == -1) {
@@ -406,6 +444,7 @@ public class Bot {
             for (int i = 0; i < speed_reduction; i++) {
                 final_speed = speedIfDecelerate(myCar.speed);
             }
+            final_speed = max(3, final_speed);
         }
 
         return min(final_speed, maxSpeed(myCar.damage + damage));
