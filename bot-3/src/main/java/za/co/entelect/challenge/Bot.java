@@ -39,24 +39,16 @@ public class Bot {
         List<Lane> blocksInFrontLeft = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, LEFT);
         List<Lane> blocksInFrontRight = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, RIGHT);
         List<Lane> blocksInBack = getBlocksBack(myCar.position.lane, myCar.position.block, gameState);
+        List<Lane> blocksIfBoost = blocksInFront.subList(0, min(speedIfBoost(myCar.damage), blocksInFront.size() - 1));
+        List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(myCar.speed, myCar.damage), blocksInFront.size() - 1));
 
         // GREEDY FIX
         // Fix jika damage lebih dari atau sama dengan 3 atau jika punya boost dan damage lebih dari atau sama dengan 1
-        if(myCar.damage >= 3 || (myCar.damage >= 1 && hasPowerUp(PowerUps.BOOST, myCar.powerups))) {
+        if(myCar.damage >= 1) {
             return FIX;
         }
 
-        // GREEDY BOOST
-        // Boost jika speed akan bertambah saat command diberikan, tidak ada obstacle yang menghalangi, dan boost tersedia
-        List<Lane> blocksIfBoost = blocksInFront.subList(0, min(speedIfBoost(myCar.damage), blocksInFront.size() - 1));
-        if(myCar.speed < speedIfBoost(myCar.damage) && !(isObstaclePresent(blocksIfBoost, opponent.id)) && hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            return BOOST;
-        }
-
-        // GREEDY ACCELERATE
-        // Accelerate jika speed akan bertambah saat command diberikan dan tidak ada obstacle yang menghalangi atau speed <= 6
-        List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(myCar.speed, myCar.damage), blocksInFront.size() - 1));
-        if((myCar.speed < speedIfAccelerate(myCar.speed, myCar.damage) && !(isObstaclePresent(blocksIfAccelerate, opponent.id))) || myCar.speed <= 6) {
+        if (myCar.speed == 0) {
             return ACCELERATE;
         }
 
@@ -100,12 +92,6 @@ public class Bot {
             // Lizard jika kedua lane ada obstacle, punya lizard, dan tidak ada obstacle di titik akhir gerakan
             if(isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id) && hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
                 return LIZARD;
-            }
-
-            // Decelerate jika obstacle bisa dihindari dengan command ini dan speed >= 6
-            List<Lane> blocksIfDecelerate = blocksInFront.subList(0, min(speedIfDecelerate(myCar.speed), blocksInFront.size() - 1));
-            if(!isObstaclePresent(blocksIfDecelerate, opponent.id) && myCar.speed >= 6) {
-                return DECELERATE;
             }
 
             if (isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id)) {
@@ -186,7 +172,7 @@ public class Bot {
         else {
             // Gunakan tweet di depan lawan jika punya tweet
             if (hasPowerUp(PowerUps.TWEET, myCar.powerups)) {
-                return new TweetCommand(opponent.position.lane, opponent.position.block + opponent.speed + 2);
+                return new TweetCommand(opponent.position.lane, opponent.position.block + speedIfAccelerate(opponent.speed, opponent.damage) + 2);
             }
 
             // Gunakan oil jika lawan ada di belakang dan di belakang tidak ada obstacle
@@ -197,6 +183,18 @@ public class Bot {
             if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar.position, opponent.position)) {
                 return EMP;
             }
+        }
+
+        // GREEDY BOOST
+        // Boost jika speed akan bertambah saat command diberikan, tidak ada obstacle yang menghalangi, dan boost tersedia
+        if(myCar.speed < speedIfBoost(myCar.damage) && !(isObstaclePresent(blocksIfBoost, opponent.id)) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
+            return BOOST;
+        }
+
+        // GREEDY ACCELERATE
+        // Accelerate jika speed akan bertambah saat command diberikan dan tidak ada obstacle yang menghalangi atau speed <= 6
+        if((myCar.speed < speedIfAccelerate(myCar.speed, myCar.damage) && !(isObstaclePresent(blocksIfAccelerate, opponent.id))) || myCar.speed <= 6) {
+            return ACCELERATE;
         }
 
         return NOTHING;
