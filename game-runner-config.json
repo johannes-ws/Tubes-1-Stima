@@ -5,7 +5,7 @@
   "verbose-mode": true,
   "max-runtime-ms": 1000,
   "player-a": "./jojo-bot/java",
-  "player-b": "./ferry-bot-2",
+  "player-b": "./bot-3",
   "max-request-retries": 10,
   "request-timeout-ms": 5000,
   "is-tournament-mode": false,
