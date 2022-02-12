@@ -39,36 +39,43 @@ public class Bot {
         Car opponent = gameState.opponent;
 
         //Mendeteksi obstacle di 3 lane terdekat
-        List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block, gameState);
-        List<Object> rightBlocks = getBlocksInRight(myCar.position.lane, myCar.position.block, gameState);
-        List<Object> leftBlocks = getBlocksInLeft(myCar.position.lane, myCar.position.block, gameState);
+        List<Object> blocks15 = getBlocksInFront(myCar.position.lane, myCar.position.block, gameState,15);
+        List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block, gameState,9);
+        List<Object> rightBlocks = getBlocksInRight(myCar.position.lane, myCar.position.block, gameState, myCar.speed);
+        List<Object> leftBlocks = getBlocksInLeft(myCar.position.lane, myCar.position.block, gameState, myCar.speed);
 
-        //Fix first if too damaged to move
-        if(myCar.damage >= 3) {
+        //Memperbaiki mobil segera ketika damage sudah lebih dari samadengan 2
+        if(myCar.damage > 1) {
             return FIX;
         }
-        //If my car too slow
-        if(myCar.speed <= 3){
+
+        //Menggunakan boost jika sudah didapatkan
+        if (hasPowerUp(PowerUps.BOOST, myCar.powerups) && myCar.damage == 0 && !(blocks15.contains(Terrain.MUD) || blocks15.contains(Terrain.WALL) || blocks15.contains(Terrain.OIL_SPILL))) {
+            return BOOST;
+        }
+
+        //Move if get 1 or 4 lane
+        if (myCar.speed < 5){
             return ACCELERATE;
         }
 
-        //Pemilihan command untuk menghindari obstacle
-        if (blocks.contains(Terrain.MUD) || blocks.contains(Terrain.WALL)){
+        //Pemilihan command untuk menghindari obstacle (Mud, Wall, Oil, Truck belum)
+        if (blocks.contains(Terrain.MUD) || blocks.contains(Terrain.WALL) || blocks.contains(Terrain.OIL_SPILL)){
             if(hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
                 return LIZARD;
             }
             else {
-                if (rightBlocks.contains(Terrain.MUD) || rightBlocks.contains(Terrain.WALL)){
+                if (myCar.position.lane != 1 && (rightBlocks.contains(Terrain.MUD) || rightBlocks.contains(Terrain.WALL) || rightBlocks.contains(Terrain.OIL_SPILL))){
                     return TURN_LEFT;
                 }
-                if(leftBlocks.contains(Terrain.MUD) || leftBlocks.contains(Terrain.WALL)){
+                if(myCar.position.lane != 4 && (leftBlocks.contains(Terrain.MUD) || leftBlocks.contains(Terrain.WALL) || leftBlocks.contains(Terrain.OIL_SPILL))){
                     return TURN_RIGHT;
                 }
             }
-            return TURN_RIGHT;
+            return ACCELERATE;
         }
 
-        //Move if get 1 or 4 lane
+
         if(myCar.position.lane == 1 && !(rightBlocks.contains(Terrain.MUD) || rightBlocks.contains(Terrain.WALL))){
             return TURN_RIGHT;
         }
@@ -76,9 +83,22 @@ public class Bot {
             return TURN_LEFT;
         }
 
-        //Menggunakan boost jika sudah didapatkan
-        if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            return BOOST;
+        //Menggunakan EMP jika opponent ada di depan myCar dan berada di lane yang sama atau bersebelahan
+        if(Math.abs(myCar.position.lane - opponent.position.lane) < 2 && myCar.position.block < opponent.position.block){
+            return EMP;
+        }
+
+        //Menggunakan Tweet jika sudah punya dan kecepatan 9
+        if(myCar.speed > 8 && hasPowerUp(PowerUps.TWEET, myCar.powerups)){
+            int lane = opponent.position.lane;
+            int block = opponent.position.block + opponent.speed + 3;
+            Command USE_TWEET = new TweetCommand(lane, block);
+            return USE_TWEET;
+        }
+
+        //Menggunakan OIL di lane tengah jika kecepatan 9
+        if (myCar.speed > 8 && (myCar.position.lane == 2 || myCar.position.lane == 3)){
+            return OIL;
         }
 
         return ACCELERATE;
@@ -93,7 +113,7 @@ public class Bot {
         return false;
     }
 
-    private List<Object> getBlocksInFront(int lane, int block, GameState gameState) {
+    private List<Object> getBlocksInFront(int lane, int block, GameState gameState, int speed) {
         List<Lane[]> map = gameState.lanes;
         List<Object> blocks = new ArrayList<>();
         int startBlock = map.get(0)[0].position.block;
@@ -106,7 +126,7 @@ public class Bot {
         }
 
         Lane[] laneList = map.get(lane - 1);
-        for (int i = max(block - startBlock, 0); i <= block - startBlock + gameState.player.speed; i++) {
+        for (int i = max(block - startBlock, 0); i <= block - startBlock + 15; i++) {
             if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
                 break;
             }
@@ -117,7 +137,7 @@ public class Bot {
         return blocks;
     }
 
-    private List<Object> getBlocksInRight(int lane, int block, GameState gameState) {
+    private List<Object> getBlocksInRight(int lane, int block, GameState gameState, int speed) {
         List<Lane[]> map = gameState.lanes;
         List<Object> blocks = new ArrayList<>();
         int startBlock = map.get(0)[0].position.block;
@@ -127,7 +147,7 @@ public class Bot {
         }
 
         Lane[] laneList = map.get(lane - 1);
-        for (int i = max(block - startBlock, 0); i <= block - startBlock + gameState.player.speed; i++) {
+        for (int i = max(block - startBlock, 0); i <= block - startBlock + speed; i++) {
             if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
                 break;
             }
@@ -138,7 +158,7 @@ public class Bot {
         return blocks;
     }
 
-    private List<Object> getBlocksInLeft(int lane, int block, GameState gameState) {
+    private List<Object> getBlocksInLeft(int lane, int block, GameState gameState, int speed) {
         List<Lane[]> map = gameState.lanes;
         List<Object> blocks = new ArrayList<>();
         int startBlock = map.get(0)[0].position.block;
@@ -148,7 +168,7 @@ public class Bot {
         }
 
         Lane[] laneList = map.get(lane - 1);
-        for (int i = max(block - startBlock, 0); i <= block - startBlock + gameState.player.speed; i++) {
+        for (int i = max(block - startBlock, 0); i <= block - startBlock + speed; i++) {
             if (laneList[i] == null || laneList[i].terrain == Terrain.FINISH) {
                 break;
             }
