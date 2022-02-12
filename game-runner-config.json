@@ -4,7 +4,7 @@
   "game-engine-jar": "game-engine.jar",
   "verbose-mode": true,
   "max-runtime-ms": 1000,
-  "player-a": "./ferry-bot-2",
+  "player-a": "./bot-3",
   "player-b": "./jojo-bot/java",
   "max-request-retries": 10,
   "request-timeout-ms": 5000,

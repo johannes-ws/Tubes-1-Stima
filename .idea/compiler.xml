@@ -6,11 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="java-reference-bot" />
-        <module name="java-starter-bot (2)" />
-        <module name="java-starter-bot" />
-        <module name="java-reference-bot (1)" />
-        <module name="java-starter-bot (1)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -19,6 +14,7 @@
       <module name="java-starter-bot" target="8" />
       <module name="java-starter-bot (1)" target="8" />
       <module name="java-starter-bot (2)" target="8" />
+      <module name="java-starter-bot (3)" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
