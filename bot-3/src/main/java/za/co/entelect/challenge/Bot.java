@@ -31,6 +31,7 @@ public class Bot {
     }
 
     public Command run(GameState gameState) {
+        // SETUP BLOCKS DAN VALUE YANG AKAN DICEK
         Car myCar = gameState.player;
         Car opponent = gameState.opponent;
 
@@ -38,13 +39,28 @@ public class Bot {
         List<Lane> blocksInFrontLeft = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, LEFT);
         List<Lane> blocksInFrontRight = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, RIGHT);
         List<Lane> blocksInBack = getBlocksBack(myCar.position.lane, myCar.position.block, gameState);
-        List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(myCar.speed, myCar.damage), blocksInFront.size() - 1));
-        List<Lane> blocksIfBoost = blocksInFront.subList(0, 15);
-        List<Lane> blocksIfNoAccelerate = blocksInFront.subList(0, myCar.speed);
+        List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(myCar.speed, myCar.damage), blocksInFront.size()));
+        List<Lane> blocksIfBoost = blocksInFront.subList(0, min(15, blocksInFront.size()));
+        List<Lane> blocksIfNoAccelerate = blocksInFront.subList(0, min(myCar.speed, blocksInFront.size()));
         List<Lane> blocksIfLeft = emptyList();
         List<Lane> blocksIfRight = emptyList();
 
-        // GREEDY FIX
+        if (myCar.position.lane != 1) {
+            blocksIfLeft = blocksInFrontLeft.subList(0, min(myCar.speed, blocksInFrontLeft.size() - 1));
+        }
+        if (myCar.position.lane != 4) {
+            blocksIfRight = blocksInFrontRight.subList(0, min(myCar.speed, blocksInFrontRight.size() - 1));
+        }
+
+        int leftFinalSpeed = finalSpeedIfCollide(blocksIfLeft, myCar, false);
+        int centerFinalSpeed = finalSpeedIfCollide(blocksIfAccelerate, myCar, true);
+        int rightFinalSpeed = finalSpeedIfCollide(blocksIfRight, myCar, false);
+
+        float powerUpsPrioPointsLeft = countPowerUpsPrioPoints(blocksIfLeft);
+        float powerUpsPrioPointsCenter = countPowerUpsPrioPoints(blocksIfNoAccelerate);
+        float powerUpsPrioPointsRight = countPowerUpsPrioPoints(blocksIfRight);
+
+        // STRATEGI BOT
         // Fix jika damage lebih dari atau sama dengan 3 atau jika punya boost dan damage lebih dari atau sama dengan 1
         if (myCar.damage > 1) {
             return FIX;
@@ -55,15 +71,8 @@ public class Bot {
         }
 
         // GREEDY OBSTACLE AVOIDANCE
-        // Hindari obstacle, cari jalur yang speed akhirnya paling besar, cari jalur yang dapat memberikan powerup terbanyak
+        // Hindari obstacle, gunakan lizard, cari jalur yang speed akhirnya paling besar, cari jalur yang dapat memberikan point prioritas powerup terbanyak
         if (isObstaclePresent(blocksIfNoAccelerate, opponent.id)) {
-            if (myCar.position.lane != 1) {
-                blocksIfLeft = blocksInFrontLeft.subList(0, min(myCar.speed, blocksInFrontLeft.size() - 1));
-            }
-            if (myCar.position.lane != 4) {
-                blocksIfRight = blocksInFrontRight.subList(0, min(myCar.speed, blocksInFrontRight.size() - 1));
-            }
-
             // Belok kiri jika tidak ada obstacle yang menghalangi di kiri, ada obstacle di kanan dan mobil tidak di lane 1
             if (!isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id) && myCar.position.lane != 1) {
                 return TURN_LEFT;
@@ -80,17 +89,13 @@ public class Bot {
                 if (myCar.position.lane == 4) {
                     return TURN_LEFT;
                 }
-                if (countPowerUps(blocksIfLeft) > countPowerUps(blocksIfRight)) {
+                if (countPowerUpsPrioPoints(blocksIfLeft) > countPowerUpsPrioPoints(blocksIfRight)) {
                     return TURN_LEFT;
                 }
-                if (countPowerUps(blocksIfLeft) < countPowerUps(blocksIfRight)) {
+                if (countPowerUpsPrioPoints(blocksIfLeft) < countPowerUpsPrioPoints(blocksIfRight)) {
                     return TURN_RIGHT;
                 }
-                // jika countPowerUps sama, bandingin countPrioPowerUps
-                // left > right, turn left
-                // left < right, turn right
-                // jika countPrioPowerUps sama, ya udah pilih salah satu lane aja
-                return TURN_RIGHT; // ini buat sementara aja
+                return TURN_RIGHT;
             }
 
             // Lizard jika kedua lane ada obstacle, punya lizard, dan tidak ada obstacle di titik akhir gerakan
@@ -113,28 +118,21 @@ public class Bot {
             if ((isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id))
             || (myCar.position.lane == 1 && isObstaclePresent(blocksIfRight, opponent.id))
             || (myCar.position.lane == 4 && isObstaclePresent(blocksIfLeft, opponent.id))) {
-                // Jika kedua lane ada obstacle, cari yang obstaclenya memiliki efek negatif lebih kecil
-                // Jika kedua lane ada obstacle, efek negatifnya sama, cari yang ada powerupnya
-
-                int leftFinalSpeed = finalSpeedIfCollide(blocksIfLeft, myCar, false);
-                int centerFinalSpeed = finalSpeedIfCollide(blocksIfAccelerate, myCar, true);
-                int rightFinalSpeed = finalSpeedIfCollide(blocksIfRight, myCar, false);
+                // Jika kedua lane ada obstacle, cari yang final speednya lebih besar
+                // Kalau sama, prioritaskan accelerate
+                // Kalau harus belok, lihat dari point prioritas powerupnya
                                 
                 if (myCar.position.lane == 1) {
                     if (centerFinalSpeed >= rightFinalSpeed) {
                         return ACCELERATE;
                     }
-                    if (centerFinalSpeed < rightFinalSpeed) {
-                        return TURN_RIGHT;
-                    }
+                    return TURN_RIGHT;
                 }
                 else if (myCar.position.lane == 4) {
                     if (centerFinalSpeed >= leftFinalSpeed) {
                         return ACCELERATE;
                     }
-                    if (centerFinalSpeed < leftFinalSpeed) {
-                        return TURN_LEFT;
-                    }
+                    return TURN_LEFT;
                 }
                 else {
                     if (leftFinalSpeed > centerFinalSpeed && leftFinalSpeed > rightFinalSpeed) {
@@ -153,17 +151,13 @@ public class Bot {
                         return ACCELERATE;
                     }
                     if (leftFinalSpeed == rightFinalSpeed && leftFinalSpeed > centerFinalSpeed) {
-                        if (countPowerUps(blocksIfLeft) > countPowerUps(blocksIfRight)) {
+                        if (countPowerUpsPrioPoints(blocksIfLeft) > countPowerUpsPrioPoints(blocksIfRight)) {
                             return TURN_LEFT;
                         }
-                        if (countPowerUps(blocksIfLeft) < countPowerUps(blocksIfRight)) {
+                        if (countPowerUpsPrioPoints(blocksIfLeft) < countPowerUpsPrioPoints(blocksIfRight)) {
                             return TURN_RIGHT;
                         }
-                        // jika countPowerUps sama, bandingin countPrioPowerUps
-                        // left > right, turn left
-                        // left < right, turn right
-                        // jika countPrioPowerUps sama, ya udah pilih salah satu lane aja
-                        return TURN_RIGHT; // ini buat sementara aja
+                        return TURN_RIGHT;
                     }
                     if (leftFinalSpeed == centerFinalSpeed && centerFinalSpeed == rightFinalSpeed) {
                         return ACCELERATE;
@@ -172,58 +166,44 @@ public class Bot {
             }
         }
 
-        if (myCar.position.lane != 1) {
-            blocksIfLeft = blocksInFrontLeft.subList(0, min(myCar.speed, blocksInFrontLeft.size() - 1));
-        }
-        if (myCar.position.lane != 4) {
-            blocksIfRight = blocksInFrontRight.subList(0, min(myCar.speed, blocksInFrontRight.size() - 1));
-        }
-    
-        int numOfPowerUpsLeft = countPowerUps(blocksIfLeft);
-        int numOfPowerUpsCenter = countPowerUps(blocksIfNoAccelerate);
-        int numOfPowerUpsRight = countPowerUps(blocksIfRight);
-
+        // GREEDY AMBIL POWER UP
         if (myCar.position.lane == 1) {
             if (!isObstaclePresent(blocksIfRight, opponent.id)) {
-                if (numOfPowerUpsCenter < numOfPowerUpsRight && numOfPowerUpsRight >= 1) {
+                if (powerUpsPrioPointsCenter < powerUpsPrioPointsRight && powerUpsPrioPointsRight >= 1) {
                     return TURN_RIGHT;
                 }
             }
         }
         else if (myCar.position.lane == 4) {
             if (!isObstaclePresent(blocksIfLeft, opponent.id)) {
-                if (numOfPowerUpsCenter < numOfPowerUpsLeft && numOfPowerUpsLeft >= 1) {
+                if (powerUpsPrioPointsCenter < powerUpsPrioPointsLeft && powerUpsPrioPointsLeft >= 1) {
                     return TURN_LEFT;
                 }
             }
         }
         else if (!isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id)) {
-            if (numOfPowerUpsCenter < numOfPowerUpsLeft && numOfPowerUpsLeft >= 1) {
+            if (powerUpsPrioPointsCenter < powerUpsPrioPointsLeft && powerUpsPrioPointsLeft >= 1) {
                 return TURN_LEFT;
             }
         }
         else if (isObstaclePresent(blocksIfLeft, opponent.id) && !isObstaclePresent(blocksIfRight, opponent.id)) {
-            if (numOfPowerUpsCenter < numOfPowerUpsRight && numOfPowerUpsRight >= 1) {
+            if (powerUpsPrioPointsCenter < powerUpsPrioPointsRight && powerUpsPrioPointsRight >= 1) {
                 return TURN_RIGHT;
             }
         }
         else if (!isObstaclePresent(blocksIfLeft, opponent.id) && !isObstaclePresent(blocksIfRight, opponent.id)) {
-            if (numOfPowerUpsLeft > numOfPowerUpsCenter && numOfPowerUpsLeft > numOfPowerUpsRight && numOfPowerUpsLeft >= 1) {
+            if (powerUpsPrioPointsLeft > powerUpsPrioPointsCenter && powerUpsPrioPointsLeft > powerUpsPrioPointsRight && powerUpsPrioPointsLeft >= 1) {
                 return TURN_LEFT;
             }
-            else if (numOfPowerUpsRight > numOfPowerUpsLeft && numOfPowerUpsRight > numOfPowerUpsCenter && numOfPowerUpsRight >= 1) {
+            else if (powerUpsPrioPointsRight > powerUpsPrioPointsLeft && powerUpsPrioPointsRight > powerUpsPrioPointsCenter && powerUpsPrioPointsRight >= 1) {
                 return TURN_RIGHT;
             }
-            else if (numOfPowerUpsRight == numOfPowerUpsLeft && numOfPowerUpsRight > numOfPowerUpsCenter && numOfPowerUpsRight >= 1) {
-                // jika countPowerUps sama, bandingin countPrioPowerUps
-                // left > right, turn left
-                // left < right, turn right
-                // jika countPrioPowerUps sama, ya udah pilih salah satu lane aja
-                return TURN_RIGHT; // ini buat sementara aja
+            else if (powerUpsPrioPointsRight == powerUpsPrioPointsLeft && powerUpsPrioPointsRight > powerUpsPrioPointsCenter && powerUpsPrioPointsRight >= 1) {
+                return TURN_RIGHT;
             }
         }
 
-        // GREEDY OBSTACLE PLACEMENT
+        // OBSTACLE PLACEMENT (EMP dan TWEET)
         // Gunkaan emp jika lawan di depan dan lawan ada di lane yang ada di range emp
         if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar.position, opponent.position)) {
             return EMP;
@@ -234,17 +214,18 @@ public class Bot {
             return new TweetCommand(opponent.position.lane, opponent.position.block + speedIfAccelerate(opponent.speed, opponent.damage) + 1);
         }
 
+        // BOOST
+        // Persiapan boost
         if (hasPowerUp(PowerUps.BOOST, myCar.powerups) && !isObstaclePresent(blocksIfBoost, opponent.id) && myCar.damage == 1) {
             return FIX;
         }
 
-        // GREEDY BOOST
         // Boost jika speed akan bertambah saat command diberikan, tidak ada obstacle yang menghalangi, dan boost tersedia
         if (myCar.speed < speedIfBoost(myCar.damage) && !isObstaclePresent(blocksIfBoost, opponent.id) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
             return BOOST;
         }
 
-        // GREEDY ACCELERATE
+        // ACCELERATE
         // Accelerate jika speed akan bertambah saat command diberikan dan tidak ada obstacle yang menghalangi atau speed <= 3
         if (!isObstaclePresent(blocksIfAccelerate, opponent.id) && myCar.speed < 9 && !myCar.boosting) {
             return ACCELERATE;
@@ -253,6 +234,15 @@ public class Bot {
         // Gunakan oil jika lawan ada di belakang dan di belakang tidak ada obstacle
         if (hasPowerUp(PowerUps.OIL, myCar.powerups) && myCar.position.block > opponent.position.block && (!isObstaclePresent(blocksInBack, opponent.id) || myCar.position.lane == opponent.position.lane)) {
             return OIL;
+        }
+
+        // Coba ke lane tengah kalau tidak ada obstacle
+        if (myCar.position.lane == 1 && !isObstaclePresent(blocksIfRight, opponent.id)) {
+            return TURN_RIGHT;
+        }
+
+        if (myCar.position.lane == 4 && !isObstaclePresent(blocksIfLeft, opponent.id)) {
+            return TURN_LEFT;
         }
 
         return NOTHING;
@@ -473,16 +463,31 @@ public class Bot {
         return min(final_speed, maxSpeed(myCar.damage + damage));
     }
 
-    private int countPowerUps(List<Lane> blocks) {
+    private float countPowerUpsPrioPoints(List<Lane> blocks) {
         // Mengembalikan jumlah powerup di dalam list blocks
-        int numOfPowerUps = 0;
+        float powerUpsPrioPoints = 0;
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
-            if (terrain == Terrain.BOOST || terrain == Terrain.LIZARD || terrain == Terrain.EMP || terrain == Terrain.OIL_POWER || terrain == Terrain.TWEET) {
-                numOfPowerUps++;
+            switch (terrain) {
+                case BOOST:
+                    powerUpsPrioPoints += 2;
+                    break;
+                case LIZARD:
+                    powerUpsPrioPoints += 1.75;
+                    break;
+                case EMP:
+                    powerUpsPrioPoints += 1.5;
+                    break;
+                case TWEET:
+                    powerUpsPrioPoints += 1.25;
+                    break;
+                case OIL_POWER:
+                    powerUpsPrioPoints++;
+                    break;
+                default:    
             }
         }
-        return numOfPowerUps;
+        return powerUpsPrioPoints;
     }
 
 }
