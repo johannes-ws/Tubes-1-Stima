@@ -70,19 +70,31 @@ public class Bot {
             return ACCELERATE;
         }
 
+        // Salip musuh
+        if (myCar.position.lane == opponent.position.lane
+                && myCar.position.block < opponent.position.block
+                && myCar.position.block + speedIfBoost(myCar.damage) >= opponent.position.block + opponent.speed) {
+            if (myCar.position.lane != 1 && !isObstaclePresent(blocksIfRight)) {
+                return TURN_RIGHT;
+            }
+            if (myCar.position.lane != 4 && !isObstaclePresent(blocksIfLeft)) {
+                return TURN_LEFT;
+            }
+        }
+
         // GREEDY OBSTACLE AVOIDANCE
         // Hindari obstacle, gunakan lizard, cari jalur yang speed akhirnya paling besar, cari jalur yang dapat memberikan point prioritas powerup terbanyak
-        if (isObstaclePresent(blocksIfNoAccelerate, opponent.id)) {
+        if (isObstaclePresent(blocksIfNoAccelerate)) {
             // Belok kiri jika tidak ada obstacle yang menghalangi di kiri, ada obstacle di kanan dan mobil tidak di lane 1
-            if (!isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id) && myCar.position.lane != 1) {
+            if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight) && myCar.position.lane != 1) {
                 return TURN_LEFT;
             }
             // Belok kanan jika tidak ada obstacle yang menghalangi di kanan, ada obstacle di kiri, dan mobil tidak di lane 4
-            if (!isObstaclePresent(blocksIfRight, opponent.id) && isObstaclePresent(blocksIfLeft, opponent.id) && myCar.position.lane != 4) {
+            if (!isObstaclePresent(blocksIfRight) && isObstaclePresent(blocksIfLeft) && myCar.position.lane != 4) {
                 return TURN_RIGHT;
             }
             // Jika kedua lane tidak ada obstacle, ke lane yang power up nya lebih banyak
-            if (!isObstaclePresent(blocksIfRight, opponent.id) && !isObstaclePresent(blocksIfLeft, opponent.id)) {
+            if (!isObstaclePresent(blocksIfRight) && !isObstaclePresent(blocksIfLeft)) {
                 if (myCar.position.lane == 1) {
                     return TURN_RIGHT;
                 }
@@ -101,23 +113,23 @@ public class Bot {
             // Lizard jika kedua lane ada obstacle, punya lizard, dan tidak ada obstacle di titik akhir gerakan
             if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
                 if (myCar.position.lane == 1) {
-                    if (isObstaclePresent(blocksIfRight, opponent.id)) {
+                    if (isObstaclePresent(blocksIfRight)) {
                         return LIZARD;
                     }
                 }
                 else if (myCar.position.lane == 4) {
-                    if (isObstaclePresent(blocksIfLeft, opponent.id)) {
+                    if (isObstaclePresent(blocksIfLeft)) {
                         return LIZARD;
                     }
                 }
-                else if (isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id)) {
+                else if (isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight)) {
                     return LIZARD;
                 }
             }
 
-            if ((isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id))
-            || (myCar.position.lane == 1 && isObstaclePresent(blocksIfRight, opponent.id))
-            || (myCar.position.lane == 4 && isObstaclePresent(blocksIfLeft, opponent.id))) {
+            if ((isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight))
+            || (myCar.position.lane == 1 && isObstaclePresent(blocksIfRight))
+            || (myCar.position.lane == 4 && isObstaclePresent(blocksIfLeft))) {
                 // Jika kedua lane ada obstacle, cari yang final speednya lebih besar
                 // Kalau sama, prioritaskan accelerate
                 // Kalau harus belok, lihat dari point prioritas powerupnya
@@ -168,30 +180,30 @@ public class Bot {
 
         // GREEDY AMBIL POWER UP
         if (myCar.position.lane == 1) {
-            if (!isObstaclePresent(blocksIfRight, opponent.id)) {
+            if (!isObstaclePresent(blocksIfRight)) {
                 if (powerUpsPrioPointsCenter < powerUpsPrioPointsRight && powerUpsPrioPointsRight >= 1) {
                     return TURN_RIGHT;
                 }
             }
         }
         else if (myCar.position.lane == 4) {
-            if (!isObstaclePresent(blocksIfLeft, opponent.id)) {
+            if (!isObstaclePresent(blocksIfLeft)) {
                 if (powerUpsPrioPointsCenter < powerUpsPrioPointsLeft && powerUpsPrioPointsLeft >= 1) {
                     return TURN_LEFT;
                 }
             }
         }
-        else if (!isObstaclePresent(blocksIfLeft, opponent.id) && isObstaclePresent(blocksIfRight, opponent.id)) {
+        else if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight)) {
             if (powerUpsPrioPointsCenter < powerUpsPrioPointsLeft && powerUpsPrioPointsLeft >= 1) {
                 return TURN_LEFT;
             }
         }
-        else if (isObstaclePresent(blocksIfLeft, opponent.id) && !isObstaclePresent(blocksIfRight, opponent.id)) {
+        else if (isObstaclePresent(blocksIfLeft) && !isObstaclePresent(blocksIfRight)) {
             if (powerUpsPrioPointsCenter < powerUpsPrioPointsRight && powerUpsPrioPointsRight >= 1) {
                 return TURN_RIGHT;
             }
         }
-        else if (!isObstaclePresent(blocksIfLeft, opponent.id) && !isObstaclePresent(blocksIfRight, opponent.id)) {
+        else if (!isObstaclePresent(blocksIfLeft) && !isObstaclePresent(blocksIfRight)) {
             if (powerUpsPrioPointsLeft > powerUpsPrioPointsCenter && powerUpsPrioPointsLeft > powerUpsPrioPointsRight && powerUpsPrioPointsLeft >= 1) {
                 return TURN_LEFT;
             }
@@ -202,7 +214,7 @@ public class Bot {
                 return TURN_RIGHT;
             }
         }
-
+        
         // OBSTACLE PLACEMENT (EMP dan TWEET)
         // Gunkaan emp jika lawan di depan dan lawan ada di lane yang ada di range emp
         if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar.position, opponent.position)) {
@@ -216,32 +228,32 @@ public class Bot {
 
         // BOOST
         // Persiapan boost
-        if (hasPowerUp(PowerUps.BOOST, myCar.powerups) && !isObstaclePresent(blocksIfBoost, opponent.id) && myCar.damage == 1) {
+        if (hasPowerUp(PowerUps.BOOST, myCar.powerups) && !isObstaclePresent(blocksIfBoost) && myCar.damage == 1) {
             return FIX;
         }
 
         // Boost jika speed akan bertambah saat command diberikan, tidak ada obstacle yang menghalangi, dan boost tersedia
-        if (myCar.speed < speedIfBoost(myCar.damage) && !isObstaclePresent(blocksIfBoost, opponent.id) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
+        if (myCar.speed < speedIfBoost(myCar.damage) && !isObstaclePresent(blocksIfBoost) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
             return BOOST;
         }
 
         // ACCELERATE
         // Accelerate jika speed akan bertambah saat command diberikan dan tidak ada obstacle yang menghalangi atau speed <= 3
-        if (!isObstaclePresent(blocksIfAccelerate, opponent.id) && myCar.speed < 9 && !myCar.boosting) {
+        if (!isObstaclePresent(blocksIfAccelerate) && myCar.speed < 9 && !myCar.boosting) {
             return ACCELERATE;
         }
 
         // Gunakan oil jika lawan ada di belakang dan di belakang tidak ada obstacle
-        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && myCar.position.block > opponent.position.block && (!isObstaclePresent(blocksInBack, opponent.id) || myCar.position.lane == opponent.position.lane)) {
+        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && myCar.position.block > opponent.position.block && (!isObstaclePresent(blocksInBack) || myCar.position.lane == opponent.position.lane)) {
             return OIL;
         }
 
         // Coba ke lane tengah kalau tidak ada obstacle
-        if (myCar.position.lane == 1 && !isObstaclePresent(blocksIfRight, opponent.id)) {
+        if (myCar.position.lane == 1 && !isObstaclePresent(blocksIfRight)) {
             return TURN_RIGHT;
         }
 
-        if (myCar.position.lane == 4 && !isObstaclePresent(blocksIfLeft, opponent.id)) {
+        if (myCar.position.lane == 4 && !isObstaclePresent(blocksIfLeft)) {
             return TURN_LEFT;
         }
 
@@ -406,17 +418,16 @@ public class Bot {
         return false;
     }
 
-    private Boolean isObstaclePresent(List<Lane> blocks, int opponentID) {
+    private Boolean isObstaclePresent(List<Lane> blocks) {
         // Mengembalikan true jika ada obstacle di dalam list blocks
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
-            if (terrain == Terrain.WALL || terrain == Terrain.MUD || terrain == Terrain.OIL_SPILL || block.isOccupiedByCyberTruck || block.occupiedByPlayerId == opponentID) {
+            if (terrain == Terrain.WALL || terrain == Terrain.MUD || terrain == Terrain.OIL_SPILL || block.isOccupiedByCyberTruck) {
                 return true;
             }
         }
         return false;
     }
-
 
     private int finalSpeedIfCollide(List<Lane> blocks, Car myCar, boolean isAccelerating) {
         // Mengembalikan perhitungan kecepatan akhir jika melewati suatu lane
