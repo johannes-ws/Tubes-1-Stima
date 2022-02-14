@@ -77,11 +77,11 @@ public class Bot {
         if (myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
                 && myCar.position.block + speedIfBoost(myCar.damage) >= opponent.position.block + opponent.speed) {
-            if (myCar.position.lane != 1 && !isObstaclePresent(blocksIfRight)) {
-                return TURN_RIGHT;
-            }
-            if (myCar.position.lane != 4 && !isObstaclePresent(blocksIfLeft)) {
+            if (myCar.position.lane != 1 && !isObstaclePresent(blocksIfLeft)) {
                 return TURN_LEFT;
+            }
+            if (myCar.position.lane != 4 && !isObstaclePresent(blocksIfRight)) {
+                return TURN_RIGHT;
             }
         }
 
