@@ -13,7 +13,6 @@ import static java.util.Collections.emptyList;
 public class Bot {
 
     private final static Command ACCELERATE = new AccelerateCommand();
-    private final static Command DECELERATE = new DecelerateCommand();
     private final static Command LIZARD = new LizardCommand();
     private final static Command OIL = new OilCommand();
     private final static Command BOOST = new BoostCommand();
@@ -77,11 +76,52 @@ public class Bot {
         if (myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
                 && myCar.position.block + speedIfBoost(myCar.damage) >= opponent.position.block + opponent.speed) {
-            if (myCar.position.lane != 1 && !isObstaclePresent(blocksIfLeft)) {
-                return TURN_LEFT;
+            if (myCar.position.lane != 1 && myCar.position.lane != 4) {
+                if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight)) {
+                    return TURN_LEFT;
+                }
+                else if (isObstaclePresent(blocksIfLeft) && !isObstaclePresent(blocksIfRight)) {
+                    return TURN_RIGHT;
+                }
+                else if (isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight)) {
+                    if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
+                        return LIZARD;
+                    }
+                }
+                else {
+                    if (countPowerUpsPrioPoints(blocksIfLeft) > countPowerUpsPrioPoints(blocksIfRight)) {
+                        return TURN_LEFT;
+                    }
+                    else if (countPowerUpsPrioPoints(blocksIfLeft) < countPowerUpsPrioPoints(blocksIfRight)) {
+                        return TURN_RIGHT;
+                    }
+                    else if (myCar.position.lane == 2) {
+                        return TURN_RIGHT;
+                    }
+                    else if (myCar.position.lane == 3) {
+                        return TURN_LEFT;
+                    }
+                }
             }
-            if (myCar.position.lane != 4 && !isObstaclePresent(blocksIfRight)) {
-                return TURN_RIGHT;
+            else if (myCar.position.lane == 1) {
+                if (isObstaclePresent(blocksIfRight)) {
+                    if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
+                        return LIZARD;
+                    }
+                }
+                else {
+                    return TURN_RIGHT;
+                }
+            }
+            else if (myCar.position.lane == 4) {
+                if (isObstaclePresent(blocksIfLeft)) {
+                    if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
+                        return LIZARD;
+                    }
+                }
+                else {
+                    return TURN_LEFT;
+                }
             }
         }
 
@@ -110,7 +150,12 @@ public class Bot {
                 if (countPowerUpsPrioPoints(blocksIfLeft) < countPowerUpsPrioPoints(blocksIfRight)) {
                     return TURN_RIGHT;
                 }
-                return TURN_RIGHT;
+                if (myCar.position.lane == 2) {
+                    return TURN_RIGHT;
+                }
+                if (myCar.position.lane == 3) {
+                    return TURN_LEFT;
+                }
             }
 
             // Lizard jika kedua lane ada obstacle, punya lizard
@@ -173,7 +218,12 @@ public class Bot {
                         if (countPowerUpsPrioPoints(blocksIfLeft) < countPowerUpsPrioPoints(blocksIfRight)) {
                             return TURN_RIGHT;
                         }
-                        return TURN_RIGHT;
+                        if (myCar.position.lane == 2) {
+                            return TURN_RIGHT;
+                        }
+                        if (myCar.position.lane == 3) {
+                            return TURN_LEFT;
+                        }
                     }
                     if (leftFinalSpeed == centerFinalSpeed && centerFinalSpeed == rightFinalSpeed) {
                         finalSpeedEqual = true;
@@ -216,10 +266,14 @@ public class Bot {
                 return TURN_RIGHT;
             }
             else if (powerUpsPrioPointsRight == powerUpsPrioPointsLeft && powerUpsPrioPointsRight > powerUpsPrioPointsCenter && powerUpsPrioPointsRight >= 1) {
-                return TURN_RIGHT;
+                if (myCar.position.lane == 2) {
+                    return TURN_RIGHT;
+                }
+                if (myCar.position.lane == 3) {
+                    return TURN_LEFT;
+                }
             }
         }
-
         
         // OBSTACLE PLACEMENT (EMP dan TWEET)
         // Gunkaan emp jika lawan di depan dan lawan ada di lane yang ada di range emp
@@ -481,10 +535,10 @@ public class Bot {
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
             switch (terrain) {
-                case BOOST:
+                case LIZARD:
                     powerUpsPrioPoints += 2;
                     break;
-                case LIZARD:
+                case BOOST:
                     powerUpsPrioPoints += 1.75;
                     break;
                 case EMP:
