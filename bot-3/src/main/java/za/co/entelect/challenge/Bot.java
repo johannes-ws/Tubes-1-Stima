@@ -538,10 +538,10 @@ public class Bot {
                 case LIZARD:
                     powerUpsPrioPoints += 2;
                     break;
-                case BOOST:
+                case EMP:
                     powerUpsPrioPoints += 1.75;
                     break;
-                case EMP:
+                case BOOST:
                     powerUpsPrioPoints += 1.5;
                     break;
                 case TWEET:
