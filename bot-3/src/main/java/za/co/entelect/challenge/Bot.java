@@ -243,16 +243,17 @@ public class Bot {
         }
 
         // Boost jika speed akan bertambah saat command diberikan, tidak ada obstacle yang menghalangi, dan boost tersedia
-        if (myCar.speed < speedIfBoost(myCar.damage) && !isObstaclePresent(blocksIfBoost) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
+        if (myCar.speed < speedIfBoost(myCar.damage)
+        && !isObstaclePresent(blocksIfBoost)
+        && hasPowerUp(PowerUps.BOOST, myCar.powerups)
+        && !myCar.boosting
+        && (myCar.position.lane != opponent.position.lane || (myCar.position.lane == opponent.position.lane && (myCar.position.block > opponent.position.block || myCar.position.block + speedIfBoost(myCar.damage) < opponent.position.block + opponent.speed)))) {
             return BOOST;
         }
 
         // ACCELERATE
         // Accelerate jika speed akan bertambah dan tidak ada obstacle
-        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed
-        && !isObstaclePresent(blocksIfAccelerate)
-        && !myCar.boosting
-        && (myCar.position.lane != opponent.position.lane || (myCar.position.lane == opponent.position.lane && (myCar.position.block > opponent.position.block || myCar.position.block + speedIfBoost(myCar.damage) < opponent.position.block + opponent.speed)))) {
+        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed && !isObstaclePresent(blocksIfAccelerate) && !myCar.boosting) {
             return ACCELERATE;
         }
 
