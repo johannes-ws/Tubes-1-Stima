@@ -72,62 +72,12 @@ public class Bot {
             return ACCELERATE;
         }
 
-        // Salip musuh
-        if (myCar.position.lane == opponent.position.lane
-                && myCar.position.block < opponent.position.block
-                && myCar.position.block + speedIfBoost(myCar.damage) >= opponent.position.block + opponent.speed) {
-            if (myCar.position.lane != 1 && myCar.position.lane != 4) {
-                if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight)) {
-                    return TURN_LEFT;
-                }
-                else if (isObstaclePresent(blocksIfLeft) && !isObstaclePresent(blocksIfRight)) {
-                    return TURN_RIGHT;
-                }
-                else if (isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight)) {
-                    if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
-                        return LIZARD;
-                    }
-                }
-                else {
-                    if (countPowerUpsPrioPoints(blocksIfLeft) > countPowerUpsPrioPoints(blocksIfRight)) {
-                        return TURN_LEFT;
-                    }
-                    else if (countPowerUpsPrioPoints(blocksIfLeft) < countPowerUpsPrioPoints(blocksIfRight)) {
-                        return TURN_RIGHT;
-                    }
-                    else if (myCar.position.lane == 2) {
-                        return TURN_RIGHT;
-                    }
-                    else if (myCar.position.lane == 3) {
-                        return TURN_LEFT;
-                    }
-                }
-            }
-            else if (myCar.position.lane == 1) {
-                if (isObstaclePresent(blocksIfRight)) {
-                    if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
-                        return LIZARD;
-                    }
-                }
-                else {
-                    return TURN_RIGHT;
-                }
-            }
-            else if (myCar.position.lane == 4) {
-                if (isObstaclePresent(blocksIfLeft)) {
-                    if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
-                        return LIZARD;
-                    }
-                }
-                else {
-                    return TURN_LEFT;
-                }
-            }
-        }
-
         // GREEDY OBSTACLE AVOIDANCE
         // Hindari obstacle, gunakan lizard, cari jalur yang speed akhirnya paling besar, cari jalur yang dapat memberikan point prioritas powerup terbanyak
-        if (isObstaclePresent(blocksIfNoAccelerate)) {
+        if (isObstaclePresent(blocksIfNoAccelerate)
+                || (myCar.position.lane == opponent.position.lane
+                && myCar.position.block < opponent.position.block
+                && myCar.position.block + speedIfBoost(myCar.damage) >= opponent.position.block + opponent.speed)) {
             // Belok kiri jika tidak ada obstacle yang menghalangi di kiri, ada obstacle di kanan dan mobil tidak di lane 1
             if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight) && myCar.position.lane != 1) {
                 return TURN_LEFT;
