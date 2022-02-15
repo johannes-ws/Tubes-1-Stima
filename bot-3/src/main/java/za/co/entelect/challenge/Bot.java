@@ -77,7 +77,7 @@ public class Bot {
         if (isObstaclePresent(blocksIfNoAccelerate)
                 || (myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
-                && myCar.position.block + speedIfBoost(myCar.damage) >= opponent.position.block + opponent.speed)) {
+                && myCar.position.block + speedIfAccelerate(myCar.speed, myCar.damage) >= opponent.position.block + opponent.speed)) {
             // Belok kiri jika tidak ada obstacle yang menghalangi di kiri, ada obstacle di kanan dan mobil tidak di lane 1
             if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight) && myCar.position.lane != 1) {
                 return TURN_LEFT;
@@ -249,7 +249,10 @@ public class Bot {
 
         // ACCELERATE
         // Accelerate jika speed akan bertambah dan tidak ada obstacle
-        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed && !isObstaclePresent(blocksIfAccelerate) && !myCar.boosting) {
+        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed
+        && !isObstaclePresent(blocksIfAccelerate)
+        && !myCar.boosting
+        && (myCar.position.lane != opponent.position.lane || (myCar.position.lane == opponent.position.lane && (myCar.position.block > opponent.position.block || myCar.position.block + speedIfBoost(myCar.damage) < opponent.position.block + opponent.speed)))) {
             return ACCELERATE;
         }
 
