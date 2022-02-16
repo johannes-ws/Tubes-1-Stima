@@ -238,7 +238,7 @@ public class Bot {
 
         // BOOST
         // Gunakan BOOST jika tidak ada obstacle yang menghalangi, punya BOOST, dan tidak sedang memakai BOOST
-        if (!isObstaclePresent(blocksIfBoost) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && !myCar.boosting) {
+        if (!isObstaclePresent(blocksIfBoost) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && myCar.boostCounter <= 1) {
             // Persiapan penggunaan BOOST
             if (myCar.damage == 1) {
                 return FIX;
@@ -251,7 +251,7 @@ public class Bot {
 
         // ACCELERATE
         // Gunakan ACCELERATE jika speed akan bertambah, tidak ada obstacle, dan tidak sedang menggunakan BOOST
-        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed && !isObstaclePresent(blocksIfAccelerate) && !myCar.boosting) {
+        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed && !isObstaclePresent(blocksIfAccelerate) && myCar.boostCounter <= 1) {
             return ACCELERATE;
         }
 
@@ -514,6 +514,6 @@ public class Bot {
         // dan block akhir pemain berada di depan block akhir lawan (jika tidak ada tabrakan)
         return myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
-                && myCar.position.block + speed >= opponent.position.block + opponent.speed;
+                && myCar.position.block + speedIfAccelerate(myCar.speed, myCar.damage) >= opponent.position.block + opponent.speed;
     }
 }
