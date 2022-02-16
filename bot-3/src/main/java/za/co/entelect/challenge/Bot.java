@@ -230,7 +230,7 @@ public class Bot {
         
         // OBSTACLE PLACEMENT (EMP dan TWEET)
         // Gunakan EMP jika lawan ada di range EMP
-        if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar.position, opponent.position)) {
+        if (hasPowerUp(PowerUps.EMP, myCar.powerups) && isInEmpRange(myCar, opponent)) {
             return EMP;
         }
 
@@ -396,25 +396,25 @@ public class Bot {
 
     private Boolean isInEmpRange(Position myCarPosition, Position opponentPosition) {
         // Mengembalikan true jika mobil lawan berada di posisi yang akan terkena EMP
-        if (myCarPosition.block < opponentPosition.block) {
-            switch (myCarPosition.lane) {
+        if ((myCarPosition.position.lane != opponentPosition.position.lane && myCarPosition.position.block < opponentPosition.position.block) || (myCarPosition.position.lane == opponentPosition.position.lane && myCarPosition.position.block + myCarPosition.speed < opponentPosition.position.block)) {
+            switch (myCarPosition.position.lane) {
                 case 1:
-                    if (opponentPosition.lane == 1 || opponentPosition.lane == 2) {
+                    if (opponentPosition.position.lane == 1 || opponentPosition.position.lane == 2) {
                         return true;
                     }
                     break;
                 case 2:
-                    if (opponentPosition.lane == 1 || opponentPosition.lane == 2 || opponentPosition.lane == 3) {
+                    if (opponentPosition.position.lane == 1 || opponentPosition.position.lane == 2 || opponentPosition.position.lane == 3) {
                         return true;
                     }
                     break;
                 case 3:
-                    if (opponentPosition.lane == 2 || opponentPosition.lane == 3 || opponentPosition.lane == 4) {
+                    if (opponentPosition.position.lane == 2 || opponentPosition.position.lane == 3 || opponentPosition.position.lane == 4) {
                         return true;
                     }
                     break;
                 case 4:
-                    if (opponentPosition.lane == 3 || opponentPosition.lane == 4) {
+                    if (opponentPosition.position.lane == 3 || opponentPosition.position.lane == 4) {
                         return true;
                     }
                     break;
