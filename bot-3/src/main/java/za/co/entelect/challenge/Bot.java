@@ -36,28 +36,31 @@ public class Bot {
         Car myCar = gameState.player;
         Car opponent = gameState.opponent;
 
+        int defaultFinalSpeed = getDefaultFinalSpeed(myCar);
+
         List<Lane> blocksInFront = getBlocksInFront(myCar.position.lane, myCar.position.block, gameState);
         List<Lane> blocksInFrontLeft = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, LEFT);
         List<Lane> blocksInFrontRight = getBlocksSide(myCar.position.lane, myCar.position.block, gameState, RIGHT);
         List<Lane> blocksInBack = getBlocksBack(myCar.position.lane, myCar.position.block, gameState);
-        List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(myCar.speed, myCar.damage), blocksInFront.size()));
+        List<Lane> blocksIfAccelerate = blocksInFront.subList(0, min(speedIfAccelerate(defaultFinalSpeed, myCar.damage), blocksInFront.size()));
         List<Lane> blocksIfBoost = blocksInFront.subList(0, min(15, blocksInFront.size()));
-        List<Lane> blocksIfNoAccelerate = blocksInFront.subList(0, min(myCar.speed, blocksInFront.size()));
-        List<Lane> finalLizardBlock = blocksInFront.subList(max(0,min(myCar.speed - 1, blocksInFront.size())), min(myCar.speed, blocksInFront.size()));
+        List<Lane> blocksIfNoAccelerate = blocksInFront.subList(0, min(defaultFinalSpeed, blocksInFront.size()));
+        List<Lane> finalLizardBlock = blocksInFront.subList(max(0,min(defaultFinalSpeed - 1, blocksInFront.size())), min(defaultFinalSpeed, blocksInFront.size()));
         List<Lane> blocksIfLeft = emptyList();
         List<Lane> blocksIfRight = emptyList();
 
         if (myCar.position.lane != 1) {
-            blocksIfLeft = blocksInFrontLeft.subList(0, min(myCar.speed, blocksInFrontLeft.size() - 1));
+            blocksIfLeft = blocksInFrontLeft.subList(0, min(defaultFinalSpeed, blocksInFrontLeft.size() - 1));
         }
         if (myCar.position.lane != 4) {
-            blocksIfRight = blocksInFrontRight.subList(0, min(myCar.speed, blocksInFrontRight.size() - 1));
+            blocksIfRight = blocksInFrontRight.subList(0, min(defaultFinalSpeed, blocksInFrontRight.size() - 1));
         }
 
-        int leftFinalSpeed = finalSpeedIfCollide(blocksIfLeft, myCar);
-        int centerFinalSpeed = finalSpeedIfCollide(blocksIfNoAccelerate, myCar);
-        int rightFinalSpeed = finalSpeedIfCollide(blocksIfRight, myCar);
-        int lizardFinalSpeed = finalSpeedIfCollide(finalLizardBlock, myCar);
+        int leftFinalSpeed = finalSpeedIfCollide(blocksIfLeft, myCar, false);
+        int centerFinalSpeed = finalSpeedIfCollide(blocksIfNoAccelerate, myCar, false);
+        int accelerateFinalSpeed = finalSpeedIfCollide(blocksIfAccelerate, myCar, true);
+        int rightFinalSpeed = finalSpeedIfCollide(blocksIfRight, myCar, false);
+        int lizardFinalSpeed = finalSpeedIfCollide(finalLizardBlock, myCar, false);
 
         float powerUpsPrioPointsLeft = countPowerUpsPrioPoints(blocksIfLeft);
         float powerUpsPrioPointsCenter = countPowerUpsPrioPoints(blocksIfNoAccelerate);
@@ -72,7 +75,7 @@ public class Bot {
         }
 
         // Accelerate jika speed mobil 0
-        if (myCar.speed == 0) {
+        if (defaultFinalSpeed == 0) {
             return ACCELERATE;
         }
 
@@ -80,7 +83,7 @@ public class Bot {
         // Dijalankan ketika ada obstacle atau mobil lawan yang akan ditabrak pemain jika tidak berbelok
         // Prioritas belok, menggunakan lizard, mencari jalur dengan speed akhir terbesar, mencari jalur dengan
         // point prioritas power up terbesar, ke lane tengah
-        if (isObstaclePresent(blocksIfNoAccelerate) || isCollisionWithOpponentPossible(myCar, opponent, myCar.speed)) {
+        if (isObstaclePresent(blocksIfNoAccelerate) || isCollisionWithOpponentPossible(myCar, opponent, defaultFinalSpeed)) {
             // Belok kiri jika tidak ada obstacle yang menghalangi di kiri, ada obstacle di kanan dan mobil tidak di lane 1
             if (!isObstaclePresent(blocksIfLeft) && isObstaclePresent(blocksIfRight) && myCar.position.lane != 1) {
                 return TURN_LEFT;
@@ -251,7 +254,10 @@ public class Bot {
 
         // ACCELERATE
         // Gunakan ACCELERATE jika speed akan bertambah, tidak ada obstacle, dan tidak sedang menggunakan BOOST
-        if (speedIfAccelerate(myCar.speed, myCar.damage) > myCar.speed && !isObstaclePresent(blocksIfAccelerate) && myCar.boostCounter <= 1) {
+        if (speedIfAccelerate(defaultFinalSpeed, myCar.damage) > defaultFinalSpeed
+                && defaultFinalSpeed != maxSpeed(myCar.damage)
+                && (!isObstaclePresent(blocksIfAccelerate)
+                || accelerateFinalSpeed > centerFinalSpeed)) {
             return ACCELERATE;
         }
 
@@ -429,7 +435,7 @@ public class Bot {
         return false;
     }
 
-    private int finalSpeedIfCollide(List<Lane> blocks, Car myCar) {
+    private int finalSpeedIfCollide(List<Lane> blocks, Car myCar, boolean isAccelerating) {
         // Mengembalikan perhitungan kecepatan akhir jika melewati suatu lane
         int damage = 0;
         int speed_reduction = 0;
@@ -459,7 +465,12 @@ public class Bot {
         }
 
         if (final_speed == -1) {
-            final_speed = myCar.speed;
+            if (isAccelerating) {
+                final_speed = speedIfAccelerate(getDefaultFinalSpeed(myCar), myCar.damage);
+            }
+            else {
+                final_speed = getDefaultFinalSpeed(myCar);
+            }
             for (int i = 0; i < speed_reduction; i++) {
                 final_speed = speedIfDecelerate(final_speed);
             }
@@ -502,6 +513,16 @@ public class Bot {
         // dan block akhir pemain berada di depan block akhir lawan (jika tidak ada tabrakan)
         return myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
-                && myCar.position.block + speedIfAccelerate(myCar.speed, myCar.damage) >= opponent.position.block + opponent.speed;
+                && myCar.position.block + speedIfAccelerate(getDefaultFinalSpeed(myCar), myCar.damage) >= opponent.position.block + opponent.speed;
+    }
+
+    private int getDefaultFinalSpeed(Car myCar) {
+        // Mengembalikan speed mobil untuk ronde ini jika tidak terjadi tabrakan dan tidak diberikan command boost atau accelerate
+        if (myCar.speed == 15 && myCar.boostCounter <= 1 && myCar.boosting) {
+            return 9;
+        }
+        else {
+            return myCar.speed;
+        }
     }
 }
