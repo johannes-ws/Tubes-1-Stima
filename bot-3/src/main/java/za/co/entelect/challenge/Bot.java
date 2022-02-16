@@ -244,7 +244,7 @@ public class Bot {
                 return FIX;
             }
             // BOOST digunakan saat tidak ada yang menghalangi dan damage 0
-            if (!isCollisionWithOpponentPossible(myCar, opponent, speedIfBoost(myCar.damage))) {
+            if (!isCollisionWithOpponentPossible(myCar, opponent, maxSpeed(myCar.damage))) {
                 return BOOST;
             }
         }
@@ -388,18 +388,6 @@ public class Bot {
         }
     }
 
-    private int speedIfBoost(int damage) {
-        // Mengembalikan speed jika diberikan command BOOST
-        switch (damage) {
-            case 4: return 3;
-            case 3: return 6;
-            case 2: return 8;
-            case 1: return 9;
-            case 0: return 15;
-            default: return 0;
-        }
-    }
-
     private Boolean isInEmpRange(Position myCarPosition, Position opponentPosition) {
         // Mengembalikan true jika mobil lawan berada di posisi yang akan terkena EMP
         if (myCarPosition.block < opponentPosition.block) {
@@ -456,7 +444,7 @@ public class Bot {
                 damage += 2;
             }
             else if (terrain == Terrain.MUD || terrain == Terrain.OIL_SPILL) {
-                damage += 1;
+                damage++;
             }
         }
 
@@ -473,7 +461,7 @@ public class Bot {
         if (final_speed == -1) {
             final_speed = myCar.speed;
             for (int i = 0; i < speed_reduction; i++) {
-                final_speed = speedIfDecelerate(myCar.speed);
+                final_speed = speedIfDecelerate(final_speed);
             }
             final_speed = max(3, final_speed);
         }
