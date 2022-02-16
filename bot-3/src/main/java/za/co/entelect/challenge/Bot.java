@@ -513,7 +513,7 @@ public class Bot {
         // dan block akhir pemain berada di depan block akhir lawan (jika tidak ada tabrakan)
         return myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
-                && myCar.position.block + speedIfAccelerate(getDefaultFinalSpeed(myCar), myCar.damage) >= opponent.position.block + opponent.speed;
+                && myCar.position.block + getDefaultFinalSpeed(myCar),  >= opponent.position.block + opponent.speed;
     }
 
     private int getDefaultFinalSpeed(Car myCar) {
