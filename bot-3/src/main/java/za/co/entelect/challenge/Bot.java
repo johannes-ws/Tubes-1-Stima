@@ -253,9 +253,9 @@ public class Bot {
         }
 
         // ACCELERATE
-        // Gunakan ACCELERATE jika speed akan bertambah, tidak ada obstacle, dan tidak sedang menggunakan BOOST
+        // Gunakan ACCELERATE jika speed akan bertambah dan tidak ada obstacle atau speed akhir jika accelerate
+        // lebih besar dari jika tidak menggunakan accelerate
         if (speedIfAccelerate(defaultFinalSpeed, myCar.damage) > defaultFinalSpeed
-                && defaultFinalSpeed != maxSpeed(myCar.damage)
                 && (!isObstaclePresent(blocksIfAccelerate)
                 || accelerateFinalSpeed > centerFinalSpeed)) {
             return ACCELERATE;
@@ -513,7 +513,7 @@ public class Bot {
         // dan block akhir pemain berada di depan block akhir lawan (jika tidak ada tabrakan)
         return myCar.position.lane == opponent.position.lane
                 && myCar.position.block < opponent.position.block
-                && myCar.position.block + getDefaultFinalSpeed(myCar),  >= opponent.position.block + opponent.speed;
+                && myCar.position.block + getDefaultFinalSpeed(myCar) >= opponent.position.block + opponent.speed;
     }
 
     private int getDefaultFinalSpeed(Car myCar) {
