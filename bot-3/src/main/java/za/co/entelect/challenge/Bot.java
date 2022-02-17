@@ -242,7 +242,7 @@ public class Bot {
         // BOOST
         // Gunakan BOOST jika tidak ada obstacle yang menghalangi, punya BOOST, dan tidak sedang memakai BOOST
         if (!isObstaclePresent(blocksIfBoost) && hasPowerUp(PowerUps.BOOST, myCar.powerups) && myCar.boostCounter <= 1) {
-            // Persiapan penggunaan BOOST
+            // Persiapan penggunaan BOOST jika ada damage
             if (myCar.damage == 1) {
                 return FIX;
             }
@@ -441,6 +441,7 @@ public class Bot {
         int speed_reduction = 0;
         int final_speed = -1;
 
+        // Hitung total damage
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
             if (block.isOccupiedByCyberTruck) {
@@ -454,6 +455,7 @@ public class Bot {
             }
         }
 
+        // Hitung total pengurangan speed
         for (Lane block: blocks) {
             Terrain terrain = block.terrain;
             if (terrain == Terrain.WALL) {
@@ -464,6 +466,7 @@ public class Bot {
             }
         }
 
+        // Hitung kecepatan akhir
         if (final_speed == -1) {
             if (isAccelerating) {
                 final_speed = speedIfAccelerate(getDefaultFinalSpeed(myCar), myCar.damage);
