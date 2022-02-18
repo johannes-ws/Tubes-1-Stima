@@ -76,6 +76,8 @@
 9. Kemudian permainan dapat di eksplorasi dengan visualizer ini
 
 ## Author
-1. Gede Sumerta Yoga (13520021)
-2. Johannes Winson Sukiatmodjo (13520123)
-3. Ignasius Ferry Priguna (13520126)
+| NIM      | Nama                        |
+| -------- | --------------------------- |
+| 13520021 | Gede Sumerta Yoga           |
+| 13520123 | Johannes Winson Sukiatmodjo |
+| 13520126 | Ignasius Ferry Priguna      |
