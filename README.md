@@ -65,15 +65,17 @@
 6. Akan terbentuk folder bernama target yang isinya berisi file berekstensi .jar
 
 ## Menjalankan Permainan
-1. Copy file .jar yang ada di folder bin ke tempat yang akan digunakan
-2. Copy juga source code program dengan menggunakan src pada repositori ini
-3. Perhatikan konfigurasi yang ada di game-runner-config.json terutama berkaitan dengan direktori bot yang digunakan
-4. Jika konfigurasi sudah dilakukan, jalankan run.bat
-5. Akan tampil permainan pada command prompt dan rekap pertandingan akan tersimpan di folder match-logs
-6. Jika ingin menggunakan visualizer yang kami sarankan di bagian requirement, zip folder pertandingan yang ada di folder match-logs
-7. Klik link visualizernya
-8. Masukkan file zip tadi ke visualizer dengan menggunakan tanda + di bagian atas kiri
-9. Kemudian permainan dapat di eksplorasi dengan visualizer ini
+1. Copy folder src ke dalam folder starter-pack
+2. Di folder src tadi, buat folder target di dalam folder java
+3. Copy file .jar yang ada di folder bin ke dalam folder target yang dibuat sebelumnya
+4. Ganti nama folder src terluar jika diperlukan
+5. Pada game-runnner-config.json, set path "player-a" atau "player-b" menjadi "{src atau nama folder setelah diganti}/java"
+7. Jika konfigurasi sudah dilakukan, jalankan run.bat
+8. Akan tampil permainan pada command prompt dan rekap pertandingan akan tersimpan di folder match-logs
+9. Jika ingin menggunakan visualizer yang kami sarankan di bagian requirement, zip folder pertandingan yang ada di folder match-logs
+10. Klik link visualizernya
+11. Masukkan file zip tadi ke visualizer dengan menggunakan tanda + di bagian atas kiri
+12. Kemudian permainan dapat di eksplorasi dengan visualizer ini
 
 ## Author
 | NIM      | Nama                        |
