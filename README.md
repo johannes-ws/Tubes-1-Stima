@@ -69,3 +69,9 @@
 7. Klik link visualizernya
 8. Masukkan file zip tadi ke visualizer dengan menggunakan tanda + di bagian atas kiri
 9. Kemudian permainan dapat di eksplorasi dengan visualizer ini
+
+## Author
+
+Gede Sumerta Yoga (13520021)
+Johannes Winson Sukiatmodjo (13520123)
+Ignasius Ferry Priguna (13520126)
