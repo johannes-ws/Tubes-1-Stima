@@ -18,17 +18,7 @@
 2.  Accelerate jika speed sama dengan 0
     Alasannya hanya sekadar untuk berjaga-jaga jikalau mobil tersebut berhenti.
 
-3.  Belok kiri ataupun kanan jika ada obstacle ataupun musuh di depan
-    Alasannya agar bisa meminimalkan damage yang diterima ataupun agar mobil kami tidak stuck di belakang mobil musuh.
-
-            3.1 Gunakan lizard jika terdapat obstacle di depan, kiri, dan kanan mobil
-            Alasannya sama seperti poin sebelumnya, yaitu meminimalkan damage yang diterima.
-
-            3.2 Pilih lane dimana final speed setelah menabrak obstacle merupakan yang terbesar
-            Alasannya karena tidak ada jalan lain selain terus maju. Oleh karena itu, kami mempertimbangkan hal itu dengan memilih lane yang memiliki final speed yang terbesar, agar bisa memaksimalkan kecepatan setelah menabrak obstacle.
-
-            3.3 Pilih lane dimana total poin prioritas powerup merupakan yang terbesar
-            Alasannya karena kami ingin memaksimalkan langkah ketika menentukan lane yang terbaik. Kami mendefinisikan lizard senilai 2 poin, emp senilai 1.75 poin, boost senilai 1.5 poin, tweet senilai 1.25 poin, dan yang terakhir oil senilai 1 poin. Kami memilih angka-angka tersebut karena disesuaikan dengan pertimbangan kami. Menurut kami, lizard merupakan powerup yang paling penting karena bisa dipakai saat tertinggal maupun saat memimpin. Powerup emp kami prioritaskan kedua sebagai amunisi jika mobil kami tertinggal dengan mobil musuh. Powerup boost kami prioritaskan ketiga karena tidak mudah untuk menggunakan boost, belum lagi jika musuh menggunakan emp. Keempat ada powerup tweet agar bisa memaksa musuh untuk berbelok di saat kami memimpin ataupun tertinggal. Terakhir ada powerup oil karena powerup ini memiliki chance terkena musuh yang sangat kecil.
+3.  Belok kiri ataupun kanan jika ada obstacle ataupun musuh di depan. Alasannya agar bisa meminimalkan damage yang diterima ataupun agar mobil kami tidak stuck di belakang mobil musuh.
 
 4.  Gunakan emp di saat musuh berada di depan, kiri, atau kanan
     Alasannya untuk mengejar ketertinggalan dari musuh. Kami juga memprioritaskan powerup emp dahulu agar membuat musuh tidak tenang dalam berkendara.
