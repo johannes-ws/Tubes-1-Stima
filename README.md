@@ -6,7 +6,7 @@
 2. Pemenang dari permainan ini adalah player pertama yang melewati blok finish.
 3. Terdapat command-command dan powerups yang dapat dimanfaatkan di dalam permainan.
 4. Memanfaatkan algoritma _Greedy_ dalam permainan Overdrive dengan membuat bot.
-5. kode algoritma dibuat dengan melanjutkan kode awal yang telah disiapkan oleh developer.
+5. Kode algoritma dibuat dengan melanjutkan kode awal yang telah disiapkan oleh developer.
 
 ## Strategi _Greedy_ yang Digunakan
 1.  Fix jika memiliki damage lebih dari 1
@@ -57,9 +57,9 @@
 5. Visualizer (Optional) : https://entelect-replay.raezor.co.za/
 
 ## Build Program
-1. Pastikan terlebih dahulu requirement sudah terinstall semua.
+1. Pastikan terlebih dahulu requirement sudah terinstall semua
 2. Dalam folder starter-pack terdapat folder-folder, tetapi tenang untuk sekarang perhatikan salah satu folder bot, misal starter-bot
-3. Dalam folder tersebut terdapat file pom.xml yang berguna untuk mengenali project java di Intellij IDEA.
+3. Dalam folder tersebut terdapat file pom.xml yang berguna untuk mengenali project java di Intellij IDEA
 4. Pada Maven Toolbox di Intellij IDEA, tambahkan project java ini jika misalnya belum terindentifikasi dengan menggunakan tombol + dan memilih file pom.xml tadi
 5. Kemudian Build project ini dengan menggunakan Maven Toolbox pada bagian Lifecycle dan kemudian install
 6. Akan terbentuk folder bernama target yang isinya berisi file berekstensi .jar
